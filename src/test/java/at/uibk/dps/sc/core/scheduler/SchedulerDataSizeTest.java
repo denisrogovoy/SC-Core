@@ -3,7 +3,6 @@ package at.uibk.dps.sc.core.scheduler;
 import static org.junit.Assert.*;
 import org.junit.Test;
 import com.google.gson.JsonObject;
-import at.uibk.dps.ee.enactables.EnactableAtomic;
 import at.uibk.dps.ee.model.graph.EnactmentSpecification;
 import at.uibk.dps.ee.model.graph.SpecificationProvider;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunction;
@@ -14,8 +13,9 @@ import net.sf.opendse.model.Mappings;
 import net.sf.opendse.model.Resource;
 import net.sf.opendse.model.Task;
 import static org.mockito.Mockito.mock;
+import java.util.HashSet;
 import java.util.Random;
-
+import java.util.Set;
 import static org.mockito.Mockito.when;
 
 public class SchedulerDataSizeTest {
@@ -29,17 +29,23 @@ public class SchedulerDataSizeTest {
     when(provMock.getSpecification()).thenReturn(mockSpec);
     SchedulerDataSize tested = new SchedulerDataSize(provMock, new Random(), 1, 1);
     Task task = new Task("task");
-    EnactableAtomic enactable = mock(EnactableAtomic.class);
     JsonObject empty = new JsonObject();
-    when(enactable.getInput()).thenReturn(empty);
-    PropertyServiceFunction.setEnactable(task, enactable);
+    PropertyServiceFunction.setInput(task, empty);
     Resource res = new Resource("res");
     Mapping<Task, Resource> serverlessMapping =
         PropertyServiceMapping.createMapping(task, res, EnactmentMode.Serverless, "serv");
     Mapping<Task, Resource> localMapping =
-        PropertyServiceMapping.createMapping(task, res, EnactmentMode.Local, "serv");
+        PropertyServiceMapping.createMapping(task, res, EnactmentMode.Local, "loc");
     assertTrue(tested.excludeMapping(localMapping, task));
     assertFalse(tested.excludeMapping(serverlessMapping, task));
+
+    Set<Mapping<Task, Resource>> maps = new HashSet<>();
+    maps.add(serverlessMapping);
+    maps.add(localMapping);
+
+    Set<Mapping<Task, Resource>> result = tested.chooseMappingSubset(task, maps);
+    assertEquals(1, result.size());
+    assertEquals(serverlessMapping, result.iterator().next());
   }
 
   @Test
@@ -51,15 +57,13 @@ public class SchedulerDataSizeTest {
     when(provMock.getSpecification()).thenReturn(mockSpec);
     SchedulerDataSize tested = new SchedulerDataSize(provMock, new Random(), 1, 0);
     Task task = new Task("task");
-    EnactableAtomic enactable = mock(EnactableAtomic.class);
     JsonObject empty = new JsonObject();
-    when(enactable.getInput()).thenReturn(empty);
-    PropertyServiceFunction.setEnactable(task, enactable);
+    PropertyServiceFunction.setInput(task, empty);
     Resource res = new Resource("res");
     Mapping<Task, Resource> serverlessMapping =
         PropertyServiceMapping.createMapping(task, res, EnactmentMode.Serverless, "serv");
     Mapping<Task, Resource> localMapping =
-        PropertyServiceMapping.createMapping(task, res, EnactmentMode.Local, "serv");
+        PropertyServiceMapping.createMapping(task, res, EnactmentMode.Local, "loc");
     assertFalse(tested.excludeMapping(localMapping, task));
     assertTrue(tested.excludeMapping(serverlessMapping, task));
   }

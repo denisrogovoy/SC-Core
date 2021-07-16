@@ -2,7 +2,7 @@ package at.uibk.dps.sc.core.interpreter;
 
 import java.util.Set;
 import com.google.inject.Inject;
-import at.uibk.dps.ee.core.enactable.EnactmentFunction;
+import at.uibk.dps.ee.core.function.EnactmentFunction;
 import at.uibk.dps.ee.enactables.local.container.FunctionFactoryLocal;
 import at.uibk.dps.ee.enactables.local.demo.FunctionFactoryDemo;
 import at.uibk.dps.ee.enactables.serverless.FunctionFactoryServerless;

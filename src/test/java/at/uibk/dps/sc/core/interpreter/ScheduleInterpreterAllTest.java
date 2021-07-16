@@ -2,7 +2,7 @@ package at.uibk.dps.sc.core.interpreter;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
-import at.uibk.dps.ee.core.enactable.EnactmentFunction;
+import at.uibk.dps.ee.core.function.EnactmentFunction;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunctionUser;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunctionUtilityCollections;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunctionUtilityCollections.CollectionOperation;

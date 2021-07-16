@@ -59,7 +59,7 @@ public class SchedulerDataSize extends SchedulerRandom {
    *         the defined threshold
    */
   protected boolean excludeMapping(final Mapping<Task, Resource> mapping, final Task process) {
-    final JsonObject input = PropertyServiceFunction.getEnactable(process).getInput();
+    final JsonObject input = PropertyServiceFunction.getInput(process);
     final int byteSize = input.toString().getBytes().length;
     final boolean overThreshold = byteSize > (sizeThresholdKb * 1000);
     final boolean overAndServerless = overThreshold

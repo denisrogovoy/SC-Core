@@ -4,7 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 import org.junit.Test;
 import org.mockito.Mockito;
-import at.uibk.dps.ee.core.enactable.EnactmentFunction;
+import at.uibk.dps.ee.core.function.EnactmentFunction;
 import at.uibk.dps.ee.enactables.local.LocalFunctionAbstract;
 import at.uibk.dps.ee.enactables.local.container.ContainerFunction;
 import at.uibk.dps.ee.enactables.local.container.FunctionFactoryLocal;
@@ -73,7 +73,7 @@ public class ScheduleInterpreterUserTest {
     ContainerFunction functionMock = mock(ContainerFunction.class);
     FunctionFactoryLocal factoryMock = mock(FunctionFactoryLocal.class);
     Mapping<Task, Resource> localMapping = new Mapping<Task, Resource>("bla", task, res);
-    when(factoryMock.getContainerFunction(localMapping)).thenReturn(functionMock);
+    when(factoryMock.makeFunction(localMapping)).thenReturn(functionMock);
     FunctionFactoryServerless mockFacSl = mock(FunctionFactoryServerless.class);
     FunctionFactoryDemo demoMock = mock(FunctionFactoryDemo.class);
     InterpreterMock tested = new InterpreterMock(factoryMock, mockFacSl, demoMock);
@@ -90,7 +90,7 @@ public class ScheduleInterpreterUserTest {
     FunctionFactoryLocal factoryMock = mock(FunctionFactoryLocal.class);
     FunctionFactoryServerless mockFacSl = mock(FunctionFactoryServerless.class);
     ServerlessFunction slFuncMock = mock(ServerlessFunction.class);
-    when(mockFacSl.createServerlessFunction(mapping)).thenReturn(slFuncMock);
+    when(mockFacSl.makeFunction(mapping)).thenReturn(slFuncMock);
     FunctionFactoryDemo demoMock = mock(FunctionFactoryDemo.class);
     InterpreterMock tested = new InterpreterMock(factoryMock, mockFacSl, demoMock);
     assertEquals(slFuncMock, tested.interpretServerless(mapping));

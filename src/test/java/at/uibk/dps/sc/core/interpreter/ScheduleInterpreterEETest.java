@@ -2,7 +2,7 @@ package at.uibk.dps.sc.core.interpreter;
 
 import static org.junit.Assert.*;
 import org.junit.Test;
-import at.uibk.dps.ee.core.enactable.EnactmentFunction;
+import at.uibk.dps.ee.core.function.EnactmentFunction;
 import at.uibk.dps.ee.enactables.local.dataflow.FunctionFactoryDataFlow;
 import at.uibk.dps.ee.enactables.local.utility.FunctionFactoryUtility;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunctionDataFlow;
@@ -21,7 +21,7 @@ public class ScheduleInterpreterEETest {
 
   @Test
   public void testInterpretSchedule() {
-    
+
     FunctionFactoryUtility utilityMock = mock(FunctionFactoryUtility.class);
     FunctionFactoryDataFlow dataFlowMock = mock(FunctionFactoryDataFlow.class);
     Task dfTask = PropertyServiceFunctionDataFlow.createDataFlowFunction("taskdf",
@@ -30,11 +30,11 @@ public class ScheduleInterpreterEETest {
         "blabla", CollectionOperation.Block);
     EnactmentFunction dataFunc = mock(EnactmentFunction.class);
     EnactmentFunction utilFunc = mock(EnactmentFunction.class);
-    when(utilityMock.getUtilityFunction(utilTask)).thenReturn(utilFunc);
-    when(dataFlowMock.getDataFlowFunction(dfTask)).thenReturn(dataFunc);
-    
+    when(utilityMock.makeFunction(utilTask)).thenReturn(utilFunc);
+    when(dataFlowMock.makeFunction(dfTask)).thenReturn(dataFunc);
+
     ScheduleInterpreterEE tested = new ScheduleInterpreterEE(dataFlowMock, utilityMock);
-    
+
     assertEquals(dataFunc, tested.interpretSchedule(dfTask, new HashSet<>()));
     assertEquals(utilFunc, tested.interpretSchedule(utilTask, new HashSet<>()));
 

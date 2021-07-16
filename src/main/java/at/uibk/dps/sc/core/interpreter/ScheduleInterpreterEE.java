@@ -2,7 +2,7 @@ package at.uibk.dps.sc.core.interpreter;
 
 import java.util.Set;
 import com.google.inject.Inject;
-import at.uibk.dps.ee.core.enactable.EnactmentFunction;
+import at.uibk.dps.ee.core.function.EnactmentFunction;
 import at.uibk.dps.ee.enactables.local.dataflow.FunctionFactoryDataFlow;
 import at.uibk.dps.ee.enactables.local.utility.FunctionFactoryUtility;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunction;
@@ -44,9 +44,9 @@ public class ScheduleInterpreterEE implements ScheduleInterpreter {
     }
     final UsageType usage = PropertyServiceFunction.getUsageType(task);
     if (usage.equals(UsageType.DataFlow)) {
-      return factoryDataFlow.getDataFlowFunction(task);
+      return factoryDataFlow.makeFunction(task);
     } else if (usage.equals(UsageType.Utility)) {
-      return factoryUtility.getUtilityFunction(task);
+      return factoryUtility.makeFunction(task);
     } else {
       throw new IllegalArgumentException("Neither a utility nor a data flow task: " + task.getId());
     }

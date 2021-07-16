@@ -2,7 +2,7 @@ package at.uibk.dps.sc.core.interpreter;
 
 import java.util.Set;
 import com.google.inject.Inject;
-import at.uibk.dps.ee.core.enactable.EnactmentFunction;
+import at.uibk.dps.ee.core.function.EnactmentFunction;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunction;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunction.UsageType;
 import net.sf.opendse.model.Mapping;

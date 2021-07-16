@@ -1,8 +1,7 @@
 package at.uibk.dps.sc.core.interpreter;
 
 import java.util.Set;
-
-import at.uibk.dps.ee.core.enactable.EnactmentFunction;
+import at.uibk.dps.ee.core.function.EnactmentFunction;
 import at.uibk.dps.ee.enactables.local.container.FunctionFactoryLocal;
 import at.uibk.dps.ee.enactables.local.demo.FunctionFactoryDemo;
 import at.uibk.dps.ee.enactables.serverless.FunctionFactoryServerless;
@@ -74,7 +73,7 @@ public abstract class ScheduleInterpreterUser implements ScheduleInterpreter {
     } else if (resType.equals(EnactmentMode.Serverless)) {
       return interpretServerless(mapping);
     } else if (resType.equals(EnactmentMode.Demo)) {
-      return functionFactoryDemo.getLocalFunction(mapping);
+      return functionFactoryDemo.makeFunction(mapping);
     } else {
       throw new IllegalArgumentException("Unknown resource type " + resType.name());
     }
@@ -88,7 +87,7 @@ public abstract class ScheduleInterpreterUser implements ScheduleInterpreter {
    * @return the enactment function for the task on the local resource
    */
   protected EnactmentFunction interpretLocal(final Mapping<Task, Resource> mapping) {
-    return functionFactoryLocal.getContainerFunction(mapping);
+    return functionFactoryLocal.makeFunction(mapping);
   }
 
   /**
@@ -98,7 +97,7 @@ public abstract class ScheduleInterpreterUser implements ScheduleInterpreter {
    * @return the enactment function for the task on a serverless resource
    */
   protected EnactmentFunction interpretServerless(final Mapping<Task, Resource> mapping) {
-    return functionFactorySl.createServerlessFunction(mapping);
+    return functionFactorySl.makeFunction(mapping);
   }
 
   /**

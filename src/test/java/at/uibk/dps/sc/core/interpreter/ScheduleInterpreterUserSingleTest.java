@@ -33,7 +33,7 @@ public class ScheduleInterpreterUserSingleTest {
     FunctionFactoryLocal factoryMock = mock(FunctionFactoryLocal.class);
     FunctionFactoryServerless mockFacSl = mock(FunctionFactoryServerless.class);
     FunctionFactoryDemo mockDemo = mock(FunctionFactoryDemo.class);
-    when(factoryMock.getContainerFunction(localMapping)).thenReturn(functionMockLockal);
+    when(factoryMock.makeFunction(localMapping)).thenReturn(functionMockLockal);
     ScheduleInterpreterUserSingle tested =
         new ScheduleInterpreterUserSingle(factoryMock, mockFacSl, mockDemo);
     assertEquals(functionMockLockal, tested.interpretSchedule(task, localSchedule));
