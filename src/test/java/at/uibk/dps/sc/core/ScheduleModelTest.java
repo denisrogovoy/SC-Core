@@ -1,9 +1,9 @@
 package at.uibk.dps.sc.core;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import java.util.HashSet;
 import java.util.Set;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import net.sf.opendse.model.Mapping;
 import net.sf.opendse.model.Resource;
 import net.sf.opendse.model.Task;
@@ -29,10 +29,12 @@ public class ScheduleModelTest {
     assertFalse(tested.isScheduled(task));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testeUnscheduled() {
-    Task task = new Task("task");
-    ScheduleModel tested = new ScheduleModel();
-    tested.getTaskSchedule(task);
+    assertThrows(IllegalArgumentException.class, () -> {
+      Task task = new Task("task");
+      ScheduleModel tested = new ScheduleModel();
+      tested.getTaskSchedule(task);
+    });
   }
 }

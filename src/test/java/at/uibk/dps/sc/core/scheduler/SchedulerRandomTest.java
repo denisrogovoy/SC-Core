@@ -1,10 +1,10 @@
 package at.uibk.dps.sc.core.scheduler;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import at.uibk.dps.ee.model.graph.EnactmentGraph;
 import at.uibk.dps.ee.model.graph.EnactmentSpecification;
 import at.uibk.dps.ee.model.graph.ResourceGraph;
@@ -21,7 +21,8 @@ public class SchedulerRandomTest {
   @Test
   public void test() {
     SpecificationProvider mockSpec = mock(SpecificationProvider.class);
-    EnactmentSpecification enactSpec = new EnactmentSpecification(new EnactmentGraph(), new ResourceGraph(), new Mappings<>());
+    EnactmentSpecification enactSpec =
+        new EnactmentSpecification(new EnactmentGraph(), new ResourceGraph(), new Mappings<>());
     when(mockSpec.getSpecification()).thenReturn(enactSpec);
     SchedulerRandom tested = new SchedulerRandom(mockSpec, new Random(), 1);
     Task task = new Task("task");

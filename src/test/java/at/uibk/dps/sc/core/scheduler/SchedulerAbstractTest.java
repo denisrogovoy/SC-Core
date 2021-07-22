@@ -1,9 +1,9 @@
 package at.uibk.dps.sc.core.scheduler;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import java.util.HashSet;
 import java.util.Set;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import at.uibk.dps.ee.model.graph.EnactmentGraph;
 import at.uibk.dps.ee.model.graph.EnactmentSpecification;
 import at.uibk.dps.ee.model.graph.ResourceGraph;
@@ -60,16 +60,18 @@ public class SchedulerAbstractTest {
     assertEquals(mapping, tested.getTaskMappingOptions(mappings, child).iterator().next());
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testGetTaskMappingOptionsExc() {
-    Task child = new Task("child");
-    Set<Mapping<Task, Resource>> mappings = new HashSet<>();
-    SpecificationProvider mock = mock(SpecificationProvider.class);
-    EnactmentSpecification enactSpec =
-        new EnactmentSpecification(new EnactmentGraph(), new ResourceGraph(), new Mappings<>());
-    when(mock.getSpecification()).thenReturn(enactSpec);
-    SchedulerMock tested = new SchedulerMock(mock);
-    tested.getTaskMappingOptions(mappings, child);
+    assertThrows(IllegalArgumentException.class, () -> {
+      Task child = new Task("child");
+      Set<Mapping<Task, Resource>> mappings = new HashSet<>();
+      SpecificationProvider mock = mock(SpecificationProvider.class);
+      EnactmentSpecification enactSpec =
+          new EnactmentSpecification(new EnactmentGraph(), new ResourceGraph(), new Mappings<>());
+      when(mock.getSpecification()).thenReturn(enactSpec);
+      SchedulerMock tested = new SchedulerMock(mock);
+      tested.getTaskMappingOptions(mappings, child);
+    });
   }
 
   @Test
@@ -86,7 +88,7 @@ public class SchedulerAbstractTest {
     EnactmentSpecification spec = new EnactmentSpecification(eGraph, rGraph, mappings);
     SpecificationProvider providerMock = mock(SpecificationProvider.class);
     when(providerMock.getSpecification()).thenReturn(spec);
-    
+
 
     SchedulerMock tested = new SchedulerMock(providerMock);
     SchedulerMock testedSpy = spy(tested);

@@ -2,7 +2,7 @@ package at.uibk.dps.sc.core.interpreter;
 
 import java.util.HashSet;
 import java.util.Set;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import at.uibk.dps.ee.core.function.EnactmentFunction;
 import at.uibk.dps.ee.enactables.local.LocalFunctionAbstract;
@@ -25,7 +25,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import static org.mockito.Mockito.spy;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 
 public class ScheduleInterpreterUserTest {
 
@@ -96,13 +96,16 @@ public class ScheduleInterpreterUserTest {
     assertEquals(slFuncMock, tested.interpretServerless(mapping));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testEmptyMapping() {
-    Task task = new Task("task");
-    Set<Mapping<Task, Resource>> schedule = new HashSet<>();
-    FunctionFactoryServerless mockFacSl = mock(FunctionFactoryServerless.class);
-    FunctionFactoryDemo demoMock = mock(FunctionFactoryDemo.class);
-    InterpreterMock tested = new InterpreterMock(mock(FunctionFactoryLocal.class), mockFacSl, demoMock);
-    tested.interpretSchedule(task, schedule);
+    assertThrows(IllegalArgumentException.class, () -> {
+      Task task = new Task("task");
+      Set<Mapping<Task, Resource>> schedule = new HashSet<>();
+      FunctionFactoryServerless mockFacSl = mock(FunctionFactoryServerless.class);
+      FunctionFactoryDemo demoMock = mock(FunctionFactoryDemo.class);
+      InterpreterMock tested =
+          new InterpreterMock(mock(FunctionFactoryLocal.class), mockFacSl, demoMock);
+      tested.interpretSchedule(task, schedule);
+    });
   }
 }

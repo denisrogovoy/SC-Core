@@ -1,7 +1,6 @@
 package at.uibk.dps.sc.core.interpreter;
 
-import static org.junit.Assert.*;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
 import at.uibk.dps.ee.core.function.EnactmentFunction;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunctionUser;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunctionUtilityCollections;
@@ -13,6 +12,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import java.util.HashSet;
 import java.util.Set;
+import org.junit.jupiter.api.Test;
 
 public class ScheduleInterpreterAllTest {
 

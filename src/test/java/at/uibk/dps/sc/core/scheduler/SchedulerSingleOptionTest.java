@@ -1,11 +1,11 @@
 package at.uibk.dps.sc.core.scheduler;
 
-import static org.junit.Assert.*;
+import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import java.util.HashSet;
 import java.util.Set;
-import org.junit.Test;
+import org.junit.jupiter.api.Test;
 import at.uibk.dps.ee.model.graph.EnactmentGraph;
 import at.uibk.dps.ee.model.graph.EnactmentSpecification;
 import at.uibk.dps.ee.model.graph.ResourceGraph;
@@ -37,23 +37,25 @@ public class SchedulerSingleOptionTest {
     assertEquals(expected, tested.scheduleTask(task));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testMoreThanOne() {
-    Task task = PropertyServiceFunctionUser.createUserTask("bla", "addition");
-    Resource res = new Resource("res");
-    Resource res2 = new Resource("res2");
-    Mapping<Task, Resource> mapping = new Mapping<Task, Resource>("m", task, res);
-    Mapping<Task, Resource> mapping2 = new Mapping<Task, Resource>("m2", task, res2);
-    Mappings<Task, Resource> mappings = new Mappings<>();
-    mappings.add(mapping);
-    mappings.add(mapping2);
-    EnactmentGraph eGraph = new EnactmentGraph();
-    ResourceGraph rGraph = new ResourceGraph();
-    EnactmentSpecification spec = new EnactmentSpecification(eGraph, rGraph, mappings);
-    SpecificationProvider providerMock = mock(SpecificationProvider.class);
-    when(providerMock.getMappings()).thenReturn(mappings);
-    when(providerMock.getSpecification()).thenReturn(spec);
-    SchedulerSingleOption tested = new SchedulerSingleOption(providerMock);
-    tested.scheduleTask(task);
+    assertThrows(IllegalArgumentException.class, () -> {
+      Task task = PropertyServiceFunctionUser.createUserTask("bla", "addition");
+      Resource res = new Resource("res");
+      Resource res2 = new Resource("res2");
+      Mapping<Task, Resource> mapping = new Mapping<Task, Resource>("m", task, res);
+      Mapping<Task, Resource> mapping2 = new Mapping<Task, Resource>("m2", task, res2);
+      Mappings<Task, Resource> mappings = new Mappings<>();
+      mappings.add(mapping);
+      mappings.add(mapping2);
+      EnactmentGraph eGraph = new EnactmentGraph();
+      ResourceGraph rGraph = new ResourceGraph();
+      EnactmentSpecification spec = new EnactmentSpecification(eGraph, rGraph, mappings);
+      SpecificationProvider providerMock = mock(SpecificationProvider.class);
+      when(providerMock.getMappings()).thenReturn(mappings);
+      when(providerMock.getSpecification()).thenReturn(spec);
+      SchedulerSingleOption tested = new SchedulerSingleOption(providerMock);
+      tested.scheduleTask(task);
+    });
   }
 }

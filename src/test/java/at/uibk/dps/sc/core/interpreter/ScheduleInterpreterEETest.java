@@ -1,7 +1,6 @@
 package at.uibk.dps.sc.core.interpreter;
 
-import static org.junit.Assert.*;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
 import at.uibk.dps.ee.core.function.EnactmentFunction;
 import at.uibk.dps.ee.enactables.local.dataflow.FunctionFactoryDataFlow;
 import at.uibk.dps.ee.enactables.local.utility.FunctionFactoryUtility;
@@ -15,6 +14,7 @@ import net.sf.opendse.model.Task;
 import static org.mockito.Mockito.when;
 import java.util.HashSet;
 import java.util.Set;
+import org.junit.jupiter.api.Test;
 import static org.mockito.Mockito.mock;
 
 public class ScheduleInterpreterEETest {

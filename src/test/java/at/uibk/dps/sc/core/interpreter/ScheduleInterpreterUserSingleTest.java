@@ -1,7 +1,6 @@
 package at.uibk.dps.sc.core.interpreter;
 
-import static org.junit.Assert.*;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
 import at.uibk.dps.ee.enactables.local.container.ContainerFunction;
 import at.uibk.dps.ee.enactables.local.container.FunctionFactoryLocal;
 import at.uibk.dps.ee.enactables.local.demo.FunctionFactoryDemo;
@@ -18,6 +17,7 @@ import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
 import java.util.HashSet;
 import java.util.Set;
+import org.junit.jupiter.api.Test;
 
 public class ScheduleInterpreterUserSingleTest {
 
@@ -39,21 +39,23 @@ public class ScheduleInterpreterUserSingleTest {
     assertEquals(functionMockLockal, tested.interpretSchedule(task, localSchedule));
   }
 
-  @Test(expected = IllegalArgumentException.class)
+  @Test
   public void testCheckSchedule() {
-    FunctionFactoryLocal mockFactory = mock(FunctionFactoryLocal.class);
-    FunctionFactoryServerless mockFacSl = mock(FunctionFactoryServerless.class);
-    FunctionFactoryDemo mockDemo = mock(FunctionFactoryDemo.class);
-    ScheduleInterpreterUserSingle tested =
-        new ScheduleInterpreterUserSingle(mockFactory, mockFacSl, mockDemo);
-    Task task = new Task("task");
-    Resource res = new Resource("res");
-    Resource res2 = new Resource("res2");
-    Mapping<Task, Resource> m1 = new Mapping<>("m1", task, res);
-    Mapping<Task, Resource> m2 = new Mapping<>("m2", task, res2);
-    Set<Mapping<Task, Resource>> schedule = new HashSet<>();
-    schedule.add(m1);
-    schedule.add(m2);
-    tested.checkSchedule(task, schedule);
+    assertThrows(IllegalArgumentException.class, () -> {
+      FunctionFactoryLocal mockFactory = mock(FunctionFactoryLocal.class);
+      FunctionFactoryServerless mockFacSl = mock(FunctionFactoryServerless.class);
+      FunctionFactoryDemo mockDemo = mock(FunctionFactoryDemo.class);
+      ScheduleInterpreterUserSingle tested =
+          new ScheduleInterpreterUserSingle(mockFactory, mockFacSl, mockDemo);
+      Task task = new Task("task");
+      Resource res = new Resource("res");
+      Resource res2 = new Resource("res2");
+      Mapping<Task, Resource> m1 = new Mapping<>("m1", task, res);
+      Mapping<Task, Resource> m2 = new Mapping<>("m2", task, res2);
+      Set<Mapping<Task, Resource>> schedule = new HashSet<>();
+      schedule.add(m1);
+      schedule.add(m2);
+      tested.checkSchedule(task, schedule);
+    });
   }
 }

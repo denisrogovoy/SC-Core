@@ -1,7 +1,6 @@
 package at.uibk.dps.sc.core.scheduler;
 
-import static org.junit.Assert.*;
-import org.junit.Test;
+import static org.junit.jupiter.api.Assertions.*;
 import com.google.gson.JsonObject;
 import at.uibk.dps.ee.model.graph.EnactmentSpecification;
 import at.uibk.dps.ee.model.graph.SpecificationProvider;
@@ -16,6 +15,7 @@ import static org.mockito.Mockito.mock;
 import java.util.HashSet;
 import java.util.Random;
 import java.util.Set;
+import org.junit.jupiter.api.Test;
 import static org.mockito.Mockito.when;
 
 public class SchedulerDataSizeTest {
