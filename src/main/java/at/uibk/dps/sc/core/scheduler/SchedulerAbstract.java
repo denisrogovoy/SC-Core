@@ -9,6 +9,7 @@ import at.uibk.dps.ee.model.graph.EnactmentSpecification;
 import at.uibk.dps.ee.model.graph.SpecificationProvider;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunction;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunction.UsageType;
+import at.uibk.dps.ee.model.properties.PropertyServiceFunctionUser;
 import net.sf.opendse.model.Mapping;
 import net.sf.opendse.model.Mappings;
 import net.sf.opendse.model.Resource;
@@ -65,8 +66,8 @@ public abstract class SchedulerAbstract implements Scheduler {
       return new HashSet<>();
     }
   }
-  
-  
+
+
 
   /**
    * Returns the mappings annotated for the given task in the specification
@@ -101,7 +102,12 @@ public abstract class SchedulerAbstract implements Scheduler {
    */
   protected Task getOriginalTask(final Task task) {
     if (task.getParent() == null) {
-      return task;
+      if (PropertyServiceFunctionUser.isSeqReplica(task)) {
+        return specification.getApplication()
+            .getVertex(PropertyServiceFunctionUser.getOriginalRef(task));
+      } else {
+        return task;
+      }
     } else {
       return getOriginalTask((Task) task.getParent());
     }
