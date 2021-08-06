@@ -95,6 +95,22 @@ public class ScheduleInterpreterUserTest {
     InterpreterMock tested = new InterpreterMock(factoryMock, mockFacSl, demoMock);
     assertEquals(slFuncMock, tested.interpretServerless(mapping));
   }
+  
+  @Test
+  void interpretDemoTest() {
+    Task task = PropertyServiceFunctionUser.createUserTask("task", "fancyType");
+    String resLink = "link";
+    Resource res = new Resource("res");
+    Mapping<Task, Resource> mapping =
+        PropertyServiceMapping.createMapping(task, res, EnactmentMode.Demo, resLink);
+    FunctionFactoryLocal factoryMock = mock(FunctionFactoryLocal.class);
+    FunctionFactoryServerless mockFacSl = mock(FunctionFactoryServerless.class);
+    EnactmentFunction demoFuncMock = mock(EnactmentFunction.class);
+    FunctionFactoryDemo demoMock = mock(FunctionFactoryDemo.class);
+    when(demoMock.makeFunction(mapping)).thenReturn(demoFuncMock);
+    InterpreterMock tested = new InterpreterMock(factoryMock, mockFacSl, demoMock);
+    assertEquals(demoFuncMock, tested.getFunctionForMapping(mapping));
+  }
 
   @Test
   public void testEmptyMapping() {

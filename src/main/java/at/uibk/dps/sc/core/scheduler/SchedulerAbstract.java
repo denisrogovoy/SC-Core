@@ -102,9 +102,9 @@ public abstract class SchedulerAbstract implements Scheduler {
    */
   protected Task getOriginalTask(final Task task) {
     if (task.getParent() == null) {
-      if (PropertyServiceFunctionUser.isSeqReplica(task)) {
+      if (PropertyServiceFunctionUser.isWhileReplica(task)) {
         return specification.getApplication()
-            .getVertex(PropertyServiceFunctionUser.getOriginalRef(task));
+            .getVertex(PropertyServiceFunctionUser.getWhileRef(task));
       } else {
         return task;
       }
