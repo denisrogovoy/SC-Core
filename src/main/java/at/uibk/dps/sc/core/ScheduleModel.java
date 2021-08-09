@@ -30,6 +30,13 @@ public class ScheduleModel {
   }
   
   /**
+   * Resets the entire schedule.
+   */
+  public void resetSchedule() {
+    scheduleMap.clear();
+  }
+  
+  /**
    * Removes the given task from the schedule.
    * 
    * @param task the given task
