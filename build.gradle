@@ -32,7 +32,6 @@ dependencies {
     implementation project (':EE-Guice')
     implementation project (':EE-Model')
     implementation project (':EE-Enactables')
-    implementation project (':EE-Docker')
   }else {
     implementation 'com.github.Apollo-Core:EE-Model:main-SNAPSHOT'
     implementation 'com.github.Apollo-Core:EE-Core:master-SNAPSHOT'
