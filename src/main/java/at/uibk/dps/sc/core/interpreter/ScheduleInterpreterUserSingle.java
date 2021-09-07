@@ -35,7 +35,7 @@ public class ScheduleInterpreterUserSingle extends ScheduleInterpreterUser {
   @Override
   protected EnactmentFunction interpretScheduleUser(final Task task,
       final Set<Mapping<Task, Resource>> scheduleModel) {
-    return getFunctionForMapping(scheduleModel.iterator().next());
+    return getFunctionForMapping(task, scheduleModel.iterator().next());
   }
 
   @Override

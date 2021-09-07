@@ -1,6 +1,7 @@
 package at.uibk.dps.sc.core.interpreter;
 
 import static org.junit.jupiter.api.Assertions.*;
+import at.uibk.dps.ee.enactables.FactoryInputUser;
 import at.uibk.dps.ee.enactables.local.container.ContainerFunction;
 import at.uibk.dps.ee.enactables.local.container.FunctionFactoryLocal;
 import at.uibk.dps.ee.enactables.local.demo.FunctionFactoryDemo;
@@ -33,7 +34,8 @@ public class ScheduleInterpreterUserSingleTest {
     FunctionFactoryLocal factoryMock = mock(FunctionFactoryLocal.class);
     FunctionFactoryServerless mockFacSl = mock(FunctionFactoryServerless.class);
     FunctionFactoryDemo mockDemo = mock(FunctionFactoryDemo.class);
-    when(factoryMock.makeFunction(localMapping)).thenReturn(functionMockLockal);
+    when(factoryMock.makeFunction(new FactoryInputUser(task, localMapping)))
+        .thenReturn(functionMockLockal);
     ScheduleInterpreterUserSingle tested =
         new ScheduleInterpreterUserSingle(factoryMock, mockFacSl, mockDemo);
     assertEquals(functionMockLockal, tested.interpretSchedule(task, localSchedule));

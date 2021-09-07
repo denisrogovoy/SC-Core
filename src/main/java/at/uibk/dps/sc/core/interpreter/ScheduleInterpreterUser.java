@@ -2,6 +2,7 @@ package at.uibk.dps.sc.core.interpreter;
 
 import java.util.Set;
 import at.uibk.dps.ee.core.function.EnactmentFunction;
+import at.uibk.dps.ee.enactables.FactoryInputUser;
 import at.uibk.dps.ee.enactables.local.container.FunctionFactoryLocal;
 import at.uibk.dps.ee.enactables.local.demo.FunctionFactoryDemo;
 import at.uibk.dps.ee.enactables.serverless.FunctionFactoryServerless;
@@ -63,17 +64,19 @@ public abstract class ScheduleInterpreterUser implements ScheduleInterpreter {
   /**
    * Returns the enactment function corresponding to the provided mapping edge.
    * 
+   * @param task the task for which the function is created
    * @param mapping the provided mapping edge
    * @return the enactment function corresponding to the provided mapping edge
    */
-  protected EnactmentFunction getFunctionForMapping(final Mapping<Task, Resource> mapping) {
+  protected EnactmentFunction getFunctionForMapping(final Task task,
+      final Mapping<Task, Resource> mapping) {
     final EnactmentMode resType = PropertyServiceMapping.getEnactmentMode(mapping);
     if (resType.equals(EnactmentMode.Local)) {
-      return interpretLocal(mapping);
+      return interpretLocal(task, mapping);
     } else if (resType.equals(EnactmentMode.Serverless)) {
-      return interpretServerless(mapping);
+      return interpretServerless(task, mapping);
     } else if (resType.equals(EnactmentMode.Demo)) {
-      return functionFactoryDemo.makeFunction(mapping);
+      return functionFactoryDemo.makeFunction(new FactoryInputUser(task, mapping));
     } else {
       throw new IllegalArgumentException("Unknown resource type " + resType.name());
     }
@@ -86,8 +89,9 @@ public abstract class ScheduleInterpreterUser implements ScheduleInterpreter {
    * @param resource the local resource
    * @return the enactment function for the task on the local resource
    */
-  protected EnactmentFunction interpretLocal(final Mapping<Task, Resource> mapping) {
-    return functionFactoryLocal.makeFunction(mapping);
+  protected EnactmentFunction interpretLocal(final Task task,
+      final Mapping<Task, Resource> mapping) {
+    return functionFactoryLocal.makeFunction(new FactoryInputUser(task, mapping));
   }
 
   /**
@@ -96,8 +100,9 @@ public abstract class ScheduleInterpreterUser implements ScheduleInterpreter {
    * @param mapping the mapping
    * @return the enactment function for the task on a serverless resource
    */
-  protected EnactmentFunction interpretServerless(final Mapping<Task, Resource> mapping) {
-    return functionFactorySl.makeFunction(mapping);
+  protected EnactmentFunction interpretServerless(final Task task,
+      final Mapping<Task, Resource> mapping) {
+    return functionFactorySl.makeFunction(new FactoryInputUser(task, mapping));
   }
 
   /**
