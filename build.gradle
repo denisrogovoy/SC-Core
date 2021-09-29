@@ -37,7 +37,7 @@ dependencies {
     implementation project (':EE-Model')
     implementation project (':EE-Enactables')
   }else {
-    implementation 'com.github.Apollo-Core:EE-Model:a4e86a1c20'
+    implementation 'com.github.Apollo-Core:EE-Model:main-SNAPSHOT'
     implementation 'com.github.Apollo-Core:EE-Core:master-SNAPSHOT'
     implementation 'com.github.Apollo-Core:EE-Enactables:master-SNAPSHOT'
     implementation 'com.github.Apollo-Core:EE-Guice:main-SNAPSHOT'
