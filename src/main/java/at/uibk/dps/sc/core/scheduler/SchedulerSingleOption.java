@@ -21,8 +21,6 @@ public class SchedulerSingleOption extends SchedulerAbstract {
 
   /**
    * Injection constructor; Same as parent.
-   * 
-   * @param specProvider
    */
   @Inject
   public SchedulerSingleOption(final SpecificationProvider specProvider) {

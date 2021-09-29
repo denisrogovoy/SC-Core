@@ -86,7 +86,7 @@ public abstract class ScheduleInterpreterUser implements ScheduleInterpreter {
    * Gets the enactment function for the task on the local resource.
    * 
    * @param task the task
-   * @param resource the local resource
+   * @param mapping the mapping chosen for the task
    * @return the enactment function for the task on the local resource
    */
   protected EnactmentFunction interpretLocal(final Task task,

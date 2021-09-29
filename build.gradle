@@ -4,6 +4,10 @@ buildscript {
   }
 }
 
+plugins {
+  id("net.ltgt.errorprone") version "2.0.2"
+}
+
 apply plugin: 'java'
 apply plugin: 'application'
 apply plugin: 'eclipse'
@@ -33,7 +37,7 @@ dependencies {
     implementation project (':EE-Model')
     implementation project (':EE-Enactables')
   }else {
-    implementation 'com.github.Apollo-Core:EE-Model:main-SNAPSHOT'
+    implementation 'com.github.Apollo-Core:EE-Model:a4e86a1c20'
     implementation 'com.github.Apollo-Core:EE-Core:master-SNAPSHOT'
     implementation 'com.github.Apollo-Core:EE-Enactables:master-SNAPSHOT'
     implementation 'com.github.Apollo-Core:EE-Guice:main-SNAPSHOT'
@@ -52,6 +56,8 @@ dependencies {
   testCompile group: 'org.mockito',     name: 'mockito-core',     version: '3.4.4'
   // dependency to local files
   // compile files('libs/lib.jar')
+
+  errorprone("com.google.errorprone:error_prone_core:2.9.0")
 }
 
 test {

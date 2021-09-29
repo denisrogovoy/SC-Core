@@ -3,12 +3,12 @@ package at.uibk.dps.sc.core.scheduler;
 import static org.junit.jupiter.api.Assertions.*;
 import com.google.gson.JsonObject;
 import at.uibk.dps.ee.model.graph.EnactmentSpecification;
+import at.uibk.dps.ee.model.graph.MappingsConcurrent;
 import at.uibk.dps.ee.model.graph.SpecificationProvider;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunction;
 import at.uibk.dps.ee.model.properties.PropertyServiceMapping;
 import at.uibk.dps.ee.model.properties.PropertyServiceMapping.EnactmentMode;
 import net.sf.opendse.model.Mapping;
-import net.sf.opendse.model.Mappings;
 import net.sf.opendse.model.Resource;
 import net.sf.opendse.model.Task;
 import static org.mockito.Mockito.mock;
@@ -24,7 +24,7 @@ public class SchedulerDataSizeTest {
   public void testUnderThresh() {
     SpecificationProvider provMock = mock(SpecificationProvider.class);
     EnactmentSpecification mockSpec = mock(EnactmentSpecification.class);
-    Mappings<Task, Resource> mappings = new Mappings<>();
+    MappingsConcurrent mappings = new MappingsConcurrent();
     when(mockSpec.getMappings()).thenReturn(mappings);
     when(provMock.getSpecification()).thenReturn(mockSpec);
     SchedulerDataSize tested = new SchedulerDataSize(provMock, new Random(), 1, 1);
@@ -52,7 +52,7 @@ public class SchedulerDataSizeTest {
   public void testOverThresh() {
     SpecificationProvider provMock = mock(SpecificationProvider.class);
     EnactmentSpecification mockSpec = mock(EnactmentSpecification.class);
-    Mappings<Task, Resource> mappings = new Mappings<>();
+    MappingsConcurrent mappings = new MappingsConcurrent();
     when(mockSpec.getMappings()).thenReturn(mappings);
     when(provMock.getSpecification()).thenReturn(mockSpec);
     SchedulerDataSize tested = new SchedulerDataSize(provMock, new Random(), 1, 0);

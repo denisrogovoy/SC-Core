@@ -6,13 +6,13 @@ import java.util.Set;
 import org.junit.jupiter.api.Test;
 import at.uibk.dps.ee.model.graph.EnactmentGraph;
 import at.uibk.dps.ee.model.graph.EnactmentSpecification;
+import at.uibk.dps.ee.model.graph.MappingsConcurrent;
 import at.uibk.dps.ee.model.graph.ResourceGraph;
 import at.uibk.dps.ee.model.graph.SpecificationProvider;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunctionUser;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunctionUtilityCollections;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunctionUtilityCollections.CollectionOperation;
 import net.sf.opendse.model.Mapping;
-import net.sf.opendse.model.Mappings;
 import net.sf.opendse.model.Resource;
 import net.sf.opendse.model.Task;
 
@@ -51,8 +51,8 @@ public class SchedulerAbstractTest {
     mappings.add(mapping);
 
     SpecificationProvider mock = mock(SpecificationProvider.class);
-    EnactmentSpecification enactSpec =
-        new EnactmentSpecification(new EnactmentGraph(), new ResourceGraph(), new Mappings<>());
+    EnactmentSpecification enactSpec = new EnactmentSpecification(new EnactmentGraph(),
+        new ResourceGraph(), new MappingsConcurrent(), "");
     when(mock.getSpecification()).thenReturn(enactSpec);
     SchedulerMock tested = new SchedulerMock(mock);
 
@@ -66,8 +66,8 @@ public class SchedulerAbstractTest {
       Task child = new Task("child");
       Set<Mapping<Task, Resource>> mappings = new HashSet<>();
       SpecificationProvider mock = mock(SpecificationProvider.class);
-      EnactmentSpecification enactSpec =
-          new EnactmentSpecification(new EnactmentGraph(), new ResourceGraph(), new Mappings<>());
+      EnactmentSpecification enactSpec = new EnactmentSpecification(new EnactmentGraph(),
+          new ResourceGraph(), new MappingsConcurrent(), "");
       when(mock.getSpecification()).thenReturn(enactSpec);
       SchedulerMock tested = new SchedulerMock(mock);
       tested.getTaskMappingOptions(mappings, child);
@@ -81,11 +81,11 @@ public class SchedulerAbstractTest {
     Mapping<Task, Resource> mapping = new Mapping<Task, Resource>("m", task, res);
     Set<Mapping<Task, Resource>> expected = new HashSet<>();
     expected.add(mapping);
-    Mappings<Task, Resource> mappings = new Mappings<>();
-    mappings.add(mapping);
+    MappingsConcurrent mappings = new MappingsConcurrent();
+    mappings.addMapping(mapping);
     EnactmentGraph eGraph = new EnactmentGraph();
     ResourceGraph rGraph = new ResourceGraph();
-    EnactmentSpecification spec = new EnactmentSpecification(eGraph, rGraph, mappings);
+    EnactmentSpecification spec = new EnactmentSpecification(eGraph, rGraph, mappings, "");
     SpecificationProvider providerMock = mock(SpecificationProvider.class);
     when(providerMock.getSpecification()).thenReturn(spec);
 
@@ -105,11 +105,11 @@ public class SchedulerAbstractTest {
     Mapping<Task, Resource> mapping = new Mapping<Task, Resource>("m", task, res);
     Set<Mapping<Task, Resource>> expected = new HashSet<>();
     expected.add(mapping);
-    Mappings<Task, Resource> mappings = new Mappings<>();
-    mappings.add(mapping);
+    MappingsConcurrent mappings = new MappingsConcurrent();
+    mappings.addMapping(mapping);
     EnactmentGraph eGraph = new EnactmentGraph();
     ResourceGraph rGraph = new ResourceGraph();
-    EnactmentSpecification spec = new EnactmentSpecification(eGraph, rGraph, mappings);
+    EnactmentSpecification spec = new EnactmentSpecification(eGraph, rGraph, mappings, "");
     SpecificationProvider providerMock = mock(SpecificationProvider.class);
     when(providerMock.getMappings()).thenReturn(mappings);
     when(providerMock.getSpecification()).thenReturn(spec);

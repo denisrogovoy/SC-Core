@@ -24,7 +24,6 @@ import net.sf.opendse.model.Task;
 public abstract class SchedulerAbstract implements Scheduler {
 
   protected final EnactmentSpecification specification;
-  protected final ConcurrentHashMap<Task, Set<Mapping<Task, Resource>>> concurrentMappings;
 
   /**
    * Default constructor
@@ -33,7 +32,6 @@ public abstract class SchedulerAbstract implements Scheduler {
    */
   public SchedulerAbstract(final SpecificationProvider specProvider) {
     this.specification = specProvider.getSpecification();
-    this.concurrentMappings = makeConcurrentMappings(specification.getMappings());
   }
 
   /**
@@ -56,12 +54,12 @@ public abstract class SchedulerAbstract implements Scheduler {
   public Set<Mapping<Task, Resource>> scheduleTask(final Task task) {
     if (PropertyServiceFunction.getUsageType(task).equals(UsageType.User)) {
       final Task taskKey = getOriginalTask(task);
-      if (!concurrentMappings.containsKey(taskKey)) {
+      if (specification.getMappings().getMappings(taskKey).isEmpty()) {
         throw new IllegalStateException(
             "No mapping options provided for the task " + taskKey.getId());
       }
       return chooseMappingSubset(task,
-          getTaskMappingOptions(concurrentMappings.get(taskKey), task));
+          getTaskMappingOptions(specification.getMappings().getMappings(taskKey), task));
     } else {
       return new HashSet<>();
     }
@@ -103,7 +101,7 @@ public abstract class SchedulerAbstract implements Scheduler {
   protected Task getOriginalTask(final Task task) {
     if (task.getParent() == null) {
       if (PropertyServiceFunctionUser.isWhileReplica(task)) {
-        return specification.getApplication()
+        return specification.getEnactmentGraph()
             .getVertex(PropertyServiceFunctionUser.getWhileRef(task));
       } else {
         return task;

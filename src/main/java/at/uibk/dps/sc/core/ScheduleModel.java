@@ -28,14 +28,14 @@ public class ScheduleModel {
   public boolean isScheduled(final Task functionTask) {
     return scheduleMap.containsKey(functionTask);
   }
-  
+
   /**
    * Resets the entire schedule.
    */
   public void resetSchedule() {
     scheduleMap.clear();
   }
-  
+
   /**
    * Removes the given task from the schedule.
    * 
@@ -48,8 +48,8 @@ public class ScheduleModel {
   /**
    * Sets the schedule for the given task.
    * 
-   * @param task
-   * @param schedule
+   * @param task the given task
+   * @param schedule set of mappings set as a schedule
    */
   public void setTaskSchedule(final Task task, final Set<Mapping<Task, Resource>> schedule) {
     scheduleMap.put(task, schedule);
