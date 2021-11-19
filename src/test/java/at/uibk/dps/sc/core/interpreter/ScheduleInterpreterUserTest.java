@@ -6,7 +6,7 @@ import org.junit.jupiter.api.Test;
 import org.mockito.Mockito;
 import at.uibk.dps.ee.core.function.EnactmentFunction;
 import at.uibk.dps.ee.enactables.FactoryInputUser;
-import at.uibk.dps.ee.enactables.local.LocalFunctionAbstract;
+import at.uibk.dps.ee.enactables.FunctionAbstract;
 import at.uibk.dps.ee.enactables.local.container.ContainerFunction;
 import at.uibk.dps.ee.enactables.local.container.FunctionFactoryLocal;
 import at.uibk.dps.ee.enactables.local.demo.FunctionFactoryDemo;
@@ -54,7 +54,7 @@ public class ScheduleInterpreterUserTest {
         EnactmentMode.Local, ConstantsEEModel.implIdLocalNative);
     Mapping<Task, Resource> serverlessMapping =
         PropertyServiceMapping.createMapping(task, serverless, EnactmentMode.Serverless, "resLink");
-    LocalFunctionAbstract functionMockLockal = mock(LocalFunctionAbstract.class);
+    FunctionAbstract functionMockLockal = mock(FunctionAbstract.class);
     FunctionFactoryLocal factoryMock = mock(FunctionFactoryLocal.class);
     FunctionFactoryServerless mockFacSl = mock(FunctionFactoryServerless.class);
     FunctionFactoryDemo demoMock = mock(FunctionFactoryDemo.class);
