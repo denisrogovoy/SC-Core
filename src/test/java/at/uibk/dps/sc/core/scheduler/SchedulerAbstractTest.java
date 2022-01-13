@@ -12,6 +12,9 @@ import at.uibk.dps.ee.model.graph.SpecificationProvider;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunctionUser;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunctionUtilityCollections;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunctionUtilityCollections.CollectionOperation;
+import at.uibk.dps.ee.model.properties.PropertyServiceResource;
+import at.uibk.dps.sc.core.capacity.CapacityCalculator;
+import at.uibk.dps.sc.core.capacity.CapacityCalculatorNone;
 import net.sf.opendse.model.Mapping;
 import net.sf.opendse.model.Resource;
 import net.sf.opendse.model.Task;
@@ -27,7 +30,7 @@ public class SchedulerAbstractTest {
   protected static class SchedulerMock extends SchedulerAbstract {
 
     public SchedulerMock(SpecificationProvider specProvider) {
-      super(specProvider);
+      super(specProvider, new CapacityCalculatorNone());
     }
 
     @Override
@@ -37,6 +40,46 @@ public class SchedulerAbstractTest {
       result.add(mappingOptions.iterator().next());
       return result;
     }
+  }
+
+  protected static class SchedulerCapMock extends SchedulerAbstract {
+
+    public SchedulerCapMock(SpecificationProvider specProvider, CapacityCalculator capCal) {
+      super(specProvider, capCal);
+    }
+
+    @Override
+    protected Set<Mapping<Task, Resource>> chooseMappingSubset(Task task,
+        Set<Mapping<Task, Resource>> mappingOptions) {
+      // not used
+      return null;
+    }
+  }
+
+  @Test
+  public void testIsMappingValid() {
+    Task task50 = new Task("task");
+    Task task30 = new Task("task2");
+    Resource targetRes = new Resource("res");
+    CapacityCalculator capCalc = mock(CapacityCalculator.class);
+    when(capCalc.getCapacityFraction(task30, targetRes)).thenReturn(.3);
+    when(capCalc.getCapacityFraction(task50, targetRes)).thenReturn(.5);
+    Task scheduledTask = new Task("t");
+    when(capCalc.getCapacityFraction(scheduledTask, targetRes)).thenReturn(.25);
+    SpecificationProvider mockProv = mock(SpecificationProvider.class);
+    EnactmentGraph graph = new EnactmentGraph();
+    graph.addVertex(scheduledTask);
+    graph.addVertex(task30);
+    graph.addVertex(task50);
+    EnactmentSpecification mockSpec = mock(EnactmentSpecification.class);
+    when(mockSpec.getEnactmentGraph()).thenReturn(graph);
+    when(mockProv.getSpecification()).thenReturn(mockSpec);
+    SchedulerCapMock tested = new SchedulerCapMock(mockProv, capCalc);
+    Mapping<Task, Resource> mapping = new Mapping<>("map", scheduledTask, targetRes);
+    PropertyServiceResource.addUsingTask(task50, targetRes);
+    assertTrue(tested.isValidMapping(mapping));
+    PropertyServiceResource.addUsingTask(task30, targetRes);
+    assertFalse(tested.isValidMapping(mapping));
   }
 
   @Test

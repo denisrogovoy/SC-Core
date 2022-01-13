@@ -10,6 +10,7 @@ import org.opt4j.core.start.Constant;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import at.uibk.dps.ee.model.graph.SpecificationProvider;
+import at.uibk.dps.sc.core.capacity.CapacityCalculator;
 import net.sf.opendse.model.Mapping;
 import net.sf.opendse.model.Resource;
 import net.sf.opendse.model.Task;
@@ -36,8 +37,9 @@ public class SchedulerRandom extends SchedulerAbstract {
   @Inject
   public SchedulerRandom(final SpecificationProvider specProvider, final Random random,
       @Constant(namespace = SchedulerRandom.class,
-          value = "mappingsToPick") final int mappingsToPick) {
-    super(specProvider);
+          value = "mappingsToPick") final int mappingsToPick,
+      final CapacityCalculator capCalc) {
+    super(specProvider, capCalc);
     this.random = random;
     this.mappingsToPick = mappingsToPick;
   }

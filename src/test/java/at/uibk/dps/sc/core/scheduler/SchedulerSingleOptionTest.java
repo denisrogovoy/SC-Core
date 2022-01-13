@@ -12,6 +12,7 @@ import at.uibk.dps.ee.model.graph.MappingsConcurrent;
 import at.uibk.dps.ee.model.graph.ResourceGraph;
 import at.uibk.dps.ee.model.graph.SpecificationProvider;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunctionUser;
+import at.uibk.dps.sc.core.capacity.CapacityCalculatorNone;
 import net.sf.opendse.model.Mapping;
 import net.sf.opendse.model.Resource;
 import net.sf.opendse.model.Task;
@@ -33,7 +34,8 @@ public class SchedulerSingleOptionTest {
     SpecificationProvider providerMock = mock(SpecificationProvider.class);
     when(providerMock.getMappings()).thenReturn(mappings);
     when(providerMock.getSpecification()).thenReturn(spec);
-    SchedulerSingleOption tested = new SchedulerSingleOption(providerMock);
+    SchedulerSingleOption tested =
+        new SchedulerSingleOption(providerMock, new CapacityCalculatorNone());
     assertEquals(expected, tested.scheduleTask(task));
   }
 
@@ -54,7 +56,8 @@ public class SchedulerSingleOptionTest {
       SpecificationProvider providerMock = mock(SpecificationProvider.class);
       when(providerMock.getMappings()).thenReturn(mappings);
       when(providerMock.getSpecification()).thenReturn(spec);
-      SchedulerSingleOption tested = new SchedulerSingleOption(providerMock);
+      SchedulerSingleOption tested =
+          new SchedulerSingleOption(providerMock, new CapacityCalculatorNone());
       tested.scheduleTask(task);
     });
   }

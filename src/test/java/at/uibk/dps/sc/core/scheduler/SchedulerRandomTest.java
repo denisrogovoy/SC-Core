@@ -10,6 +10,7 @@ import at.uibk.dps.ee.model.graph.EnactmentSpecification;
 import at.uibk.dps.ee.model.graph.MappingsConcurrent;
 import at.uibk.dps.ee.model.graph.ResourceGraph;
 import at.uibk.dps.ee.model.graph.SpecificationProvider;
+import at.uibk.dps.sc.core.capacity.CapacityCalculatorNone;
 import net.sf.opendse.model.Mapping;
 import net.sf.opendse.model.Resource;
 import net.sf.opendse.model.Task;
@@ -24,7 +25,8 @@ public class SchedulerRandomTest {
     EnactmentSpecification enactSpec = new EnactmentSpecification(new EnactmentGraph(),
         new ResourceGraph(), new MappingsConcurrent(), "");
     when(mockSpec.getSpecification()).thenReturn(enactSpec);
-    SchedulerRandom tested = new SchedulerRandom(mockSpec, new Random(), 1);
+    SchedulerRandom tested =
+        new SchedulerRandom(mockSpec, new Random(), 1, new CapacityCalculatorNone());
     Task task = new Task("task");
     Resource res = new Resource("res");
     Mapping<Task, Resource> mapping = new Mapping<Task, Resource>("mapping", task, res);

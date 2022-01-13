@@ -8,6 +8,7 @@ import at.uibk.dps.ee.model.graph.SpecificationProvider;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunction;
 import at.uibk.dps.ee.model.properties.PropertyServiceMapping;
 import at.uibk.dps.ee.model.properties.PropertyServiceMapping.EnactmentMode;
+import at.uibk.dps.sc.core.capacity.CapacityCalculatorNone;
 import net.sf.opendse.model.Mapping;
 import net.sf.opendse.model.Resource;
 import net.sf.opendse.model.Task;
@@ -27,7 +28,8 @@ public class SchedulerDataSizeTest {
     MappingsConcurrent mappings = new MappingsConcurrent();
     when(mockSpec.getMappings()).thenReturn(mappings);
     when(provMock.getSpecification()).thenReturn(mockSpec);
-    SchedulerDataSize tested = new SchedulerDataSize(provMock, new Random(), 1, 1);
+    SchedulerDataSize tested =
+        new SchedulerDataSize(provMock, new Random(), 1, 1, new CapacityCalculatorNone());
     Task task = new Task("task");
     JsonObject empty = new JsonObject();
     PropertyServiceFunction.setInput(task, empty);
@@ -55,7 +57,8 @@ public class SchedulerDataSizeTest {
     MappingsConcurrent mappings = new MappingsConcurrent();
     when(mockSpec.getMappings()).thenReturn(mappings);
     when(provMock.getSpecification()).thenReturn(mockSpec);
-    SchedulerDataSize tested = new SchedulerDataSize(provMock, new Random(), 1, 0);
+    SchedulerDataSize tested =
+        new SchedulerDataSize(provMock, new Random(), 1, 0, new CapacityCalculatorNone());
     Task task = new Task("task");
     JsonObject empty = new JsonObject();
     PropertyServiceFunction.setInput(task, empty);

@@ -10,6 +10,7 @@ import at.uibk.dps.ee.model.graph.SpecificationProvider;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunction;
 import at.uibk.dps.ee.model.properties.PropertyServiceMapping;
 import at.uibk.dps.ee.model.properties.PropertyServiceMapping.EnactmentMode;
+import at.uibk.dps.sc.core.capacity.CapacityCalculator;
 import net.sf.opendse.model.Mapping;
 import net.sf.opendse.model.Resource;
 import net.sf.opendse.model.Task;
@@ -38,8 +39,9 @@ public class SchedulerDataSize extends SchedulerRandom {
       @Constant(namespace = SchedulerRandom.class,
           value = "mappingsToPick") final int mappingsToPick,
       @Constant(namespace = SchedulerDataSize.class,
-          value = "sizeThreshold") final int sizeThreshold) {
-    super(specProvider, random, mappingsToPick);
+          value = "sizeThreshold") final int sizeThreshold,
+      final CapacityCalculator capCalc) {
+    super(specProvider, random, mappingsToPick, capCalc);
     this.sizeThresholdKb = sizeThreshold;
   }
 

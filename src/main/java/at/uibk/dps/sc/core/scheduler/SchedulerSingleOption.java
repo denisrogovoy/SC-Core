@@ -5,6 +5,7 @@ import java.util.Set;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
 import at.uibk.dps.ee.model.graph.SpecificationProvider;
+import at.uibk.dps.sc.core.capacity.CapacityCalculator;
 import net.sf.opendse.model.Mapping;
 import net.sf.opendse.model.Resource;
 import net.sf.opendse.model.Task;
@@ -23,15 +24,17 @@ public class SchedulerSingleOption extends SchedulerAbstract {
    * Injection constructor; Same as parent.
    */
   @Inject
-  public SchedulerSingleOption(final SpecificationProvider specProvider) {
-    super(specProvider);
+  public SchedulerSingleOption(final SpecificationProvider specProvider,
+      final CapacityCalculator capCalc) {
+    super(specProvider, capCalc);
   }
 
   @Override
   protected Set<Mapping<Task, Resource>> chooseMappingSubset(final Task task,
       final Set<Mapping<Task, Resource>> mappingOptions) {
     if (mappingOptions.size() != 1) {
-      throw new IllegalArgumentException("Not exactly one mapping provided for task " + task.getId());
+      throw new IllegalArgumentException(
+          "Not exactly one mapping provided for task " + task.getId());
     }
     return new HashSet<>(mappingOptions);
   }

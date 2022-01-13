@@ -3,6 +3,7 @@ package at.uibk.dps.sc.core;
 import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import com.google.inject.Singleton;
+import at.uibk.dps.ee.model.properties.PropertyServiceResource;
 import net.sf.opendse.model.Mapping;
 import net.sf.opendse.model.Resource;
 import net.sf.opendse.model.Task;
@@ -53,6 +54,7 @@ public class ScheduleModel {
    */
   public void setTaskSchedule(final Task task, final Set<Mapping<Task, Resource>> schedule) {
     scheduleMap.put(task, schedule);
+    schedule.forEach(m -> PropertyServiceResource.addUsingTask(task, m.getTarget()));
   }
 
   /**

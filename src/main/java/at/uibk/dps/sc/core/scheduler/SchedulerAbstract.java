@@ -2,7 +2,6 @@ package at.uibk.dps.sc.core.scheduler;
 
 import java.util.HashSet;
 import java.util.Set;
-import java.util.concurrent.ConcurrentHashMap;
 import java.util.stream.Collectors;
 import at.uibk.dps.ee.model.graph.EnactmentGraph;
 import at.uibk.dps.ee.model.graph.EnactmentSpecification;
@@ -10,8 +9,9 @@ import at.uibk.dps.ee.model.graph.SpecificationProvider;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunction;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunction.UsageType;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunctionUser;
+import at.uibk.dps.ee.model.properties.PropertyServiceResource;
+import at.uibk.dps.sc.core.capacity.CapacityCalculator;
 import net.sf.opendse.model.Mapping;
-import net.sf.opendse.model.Mappings;
 import net.sf.opendse.model.Resource;
 import net.sf.opendse.model.Task;
 
@@ -24,45 +24,53 @@ import net.sf.opendse.model.Task;
 public abstract class SchedulerAbstract implements Scheduler {
 
   protected final EnactmentSpecification specification;
+  protected final CapacityCalculator capacityCalculator;
 
   /**
    * Default constructor
    * 
    * @param specProvider specification provider
    */
-  public SchedulerAbstract(final SpecificationProvider specProvider) {
+  public SchedulerAbstract(final SpecificationProvider specProvider,
+      CapacityCalculator capacityCalculator) {
     this.specification = specProvider.getSpecification();
-  }
-
-  /**
-   * Converts the {@link Mappings} to a concurrent hashmap which can be
-   * concurrently accessed by a large number of scheduling agents.
-   * 
-   * @param mappings the mappings from the specification
-   * @return a concurrent hashmap which can be concurrently accessed by a large
-   *         number of scheduling agents
-   */
-  protected final ConcurrentHashMap<Task, Set<Mapping<Task, Resource>>> makeConcurrentMappings(
-      final Mappings<Task, Resource> mappings) {
-    final ConcurrentHashMap<Task, Set<Mapping<Task, Resource>>> result = new ConcurrentHashMap<>();
-    mappings.getAll().stream().collect(Collectors.groupingBy(Mapping::getSource))
-        .forEach((task, mappingList) -> result.put(task, new HashSet<>(mappingList)));
-    return result;
+    this.capacityCalculator = capacityCalculator;
   }
 
   @Override
   public Set<Mapping<Task, Resource>> scheduleTask(final Task task) {
     if (PropertyServiceFunction.getUsageType(task).equals(UsageType.User)) {
       final Task taskKey = getOriginalTask(task);
-      if (specification.getMappings().getMappings(taskKey).isEmpty()) {
+      final Set<Mapping<Task, Resource>> specMappings =
+          specification.getMappings().getMappings(taskKey);
+      if (specMappings.isEmpty()) {
         throw new IllegalStateException(
             "No mapping options provided for the task " + taskKey.getId());
       }
-      return chooseMappingSubset(task,
-          getTaskMappingOptions(specification.getMappings().getMappings(taskKey), task));
+      Set<Mapping<Task, Resource>> validMappings =
+          specMappings.stream().filter(m -> isValidMapping(m)).collect(Collectors.toSet());
+      return chooseMappingSubset(task, getTaskMappingOptions(validMappings, task));
     } else {
       return new HashSet<>();
     }
+  }
+
+  /**
+   * Returns true if the given mapping can be used at the current moment (used to
+   * consider resource capacity by default)
+   * 
+   * @param mapping the given mapping
+   * @return true iff the given mapping can be used at the given moment
+   */
+  protected boolean isValidMapping(Mapping<Task, Resource> mapping) {
+    Resource targetRes = mapping.getTarget();
+    Set<String> alreadyOnResource = PropertyServiceResource.getUsingTaskIds(targetRes);
+    double unavailableCapacity = alreadyOnResource.stream()
+        .map(taskId -> specification.getEnactmentGraph().getVertex(taskId))
+        .mapToDouble(task -> capacityCalculator.getCapacityFraction(task, targetRes)).sum();
+    double requiredCapacity =
+        capacityCalculator.getCapacityFraction(mapping.getSource(), targetRes);
+    return requiredCapacity + unavailableCapacity < 1.0;
   }
 
 
