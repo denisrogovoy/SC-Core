@@ -26,7 +26,7 @@ public class SchedulerSingleOption extends SchedulerAbstract {
    */
   @Inject
   public SchedulerSingleOption(final SpecificationProvider specProvider,
-      final CapacityCalculator capCalc, VertxProvider vProv) {
+      final CapacityCalculator capCalc, final VertxProvider vProv) {
     super(specProvider, capCalc, vProv);
   }
 

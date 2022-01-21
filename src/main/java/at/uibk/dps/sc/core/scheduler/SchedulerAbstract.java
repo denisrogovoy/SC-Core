@@ -47,7 +47,7 @@ public abstract class SchedulerAbstract implements Scheduler {
 
   @Override
   public Future<Set<Mapping<Task, Resource>>> scheduleTask(final Task task) {
-    Promise<Set<Mapping<Task, Resource>>> resultPromise = Promise.promise();
+    final Promise<Set<Mapping<Task, Resource>>> resultPromise = Promise.promise();
     final Set<Mapping<Task, Resource>> result = new HashSet<>();
     if (PropertyServiceFunction.getUsageType(task).equals(UsageType.User)) {
       // user task -> scheduled based on mappings

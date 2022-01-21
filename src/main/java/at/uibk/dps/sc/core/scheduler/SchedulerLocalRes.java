@@ -42,7 +42,7 @@ public class SchedulerLocalRes extends SchedulerAbstract {
   @Override
   protected Set<Mapping<Task, Resource>> chooseMappingSubset(final Task task,
       final Set<Mapping<Task, Resource>> mappingOptions) {
-    List<Mapping<Task, Resource>> actualOptions = new ArrayList<>();
+    final List<Mapping<Task, Resource>> actualOptions = new ArrayList<>();
     if (mappingOptions.stream().anyMatch(this::isCapacityMapping)) {
       // we have capacity mappings -> use one of those
       actualOptions.addAll(

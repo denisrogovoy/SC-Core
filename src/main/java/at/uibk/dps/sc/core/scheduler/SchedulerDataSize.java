@@ -41,7 +41,7 @@ public class SchedulerDataSize extends SchedulerRandom {
           value = "mappingsToPick") final int mappingsToPick,
       @Constant(namespace = SchedulerDataSize.class,
           value = "sizeThreshold") final int sizeThreshold,
-      final CapacityCalculator capCalc, VertxProvider vProv) {
+      final CapacityCalculator capCalc, final VertxProvider vProv) {
     super(specProvider, random, mappingsToPick, capCalc, vProv);
     this.sizeThresholdKb = sizeThreshold;
   }
