@@ -29,7 +29,7 @@ public class CapacityLimitationModule extends EeModule {
     return maximalTaskNumber;
   }
 
-  public void setMaximalTaskNumber(int maximalTaskNumber) {
+  public void setMaximalTaskNumber(final int maximalTaskNumber) {
     this.maximalTaskNumber = maximalTaskNumber;
   }
 }

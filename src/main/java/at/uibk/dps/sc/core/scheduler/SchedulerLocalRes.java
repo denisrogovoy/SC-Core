@@ -28,29 +28,30 @@ import net.sf.opendse.model.Task;
 public class SchedulerLocalRes extends SchedulerAbstract {
 
   protected final Rand rand;
-  
+
   /**
    * Direct usage of the parent constructor + injection of a rand
    */
   @Inject
-  public SchedulerLocalRes(SpecificationProvider specProvider,
-      CapacityCalculator capacityCalculator, VertxProvider vertProv, Rand rand) {
+  public SchedulerLocalRes(final SpecificationProvider specProvider,
+      final CapacityCalculator capacityCalculator, final VertxProvider vertProv, final Rand rand) {
     super(specProvider, capacityCalculator, vertProv);
     this.rand = rand;
   }
 
   @Override
-  protected Set<Mapping<Task, Resource>> chooseMappingSubset(Task task,
-      Set<Mapping<Task, Resource>> mappingOptions) {
+  protected Set<Mapping<Task, Resource>> chooseMappingSubset(final Task task,
+      final Set<Mapping<Task, Resource>> mappingOptions) {
     List<Mapping<Task, Resource>> actualOptions = new ArrayList<>();
     if (mappingOptions.stream().anyMatch(this::isCapacityMapping)) {
       // we have capacity mappings -> use one of those
-      actualOptions.addAll(mappingOptions.stream().filter(this::isCapacityMapping).collect(Collectors.toSet()));
-    }else {
+      actualOptions.addAll(
+          mappingOptions.stream().filter(this::isCapacityMapping).collect(Collectors.toSet()));
+    } else {
       actualOptions.addAll(mappingOptions);
     }
-    int idx = rand.nextInt(actualOptions.size());
-    Set<Mapping<Task, Resource>> result = new HashSet<>();
+    final int idx = rand.nextInt(actualOptions.size());
+    final Set<Mapping<Task, Resource>> result = new HashSet<>();
     result.add(actualOptions.get(idx));
     return result;
   }
@@ -61,9 +62,9 @@ public class SchedulerLocalRes extends SchedulerAbstract {
    * @param mapping the given mapping
    * @return true iff the given mapping is affected by resource capacity
    */
-  protected boolean isCapacityMapping(Mapping<Task, Resource> mapping) {
-    Task task = mapping.getSource();
-    Resource res = mapping.getTarget();
+  protected boolean isCapacityMapping(final Mapping<Task, Resource> mapping) {
+    final Task task = mapping.getSource();
+    final Resource res = mapping.getTarget();
     return !PropertyServiceFunction.hasNegligibleWorkload(task)
         && PropertyServiceResource.hasLimitedCapacity(res);
   }

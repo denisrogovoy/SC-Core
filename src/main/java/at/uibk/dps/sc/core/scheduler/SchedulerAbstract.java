@@ -39,7 +39,7 @@ public abstract class SchedulerAbstract implements Scheduler {
    * @param specProvider specification provider
    */
   public SchedulerAbstract(final SpecificationProvider specProvider,
-      CapacityCalculator capacityCalculator, VertxProvider vertProv) {
+      final CapacityCalculator capacityCalculator, final VertxProvider vertProv) {
     this.specification = specProvider.getSpecification();
     this.capacityCalculator = capacityCalculator;
     this.vertx = vertProv.getVertx();
@@ -62,7 +62,7 @@ public abstract class SchedulerAbstract implements Scheduler {
       this.vertx.sharedData().getLock(ConstantsScheduling.lockCapacityQuery, lockRes -> {
         if (lockRes.succeeded()) {
           final Lock capacityLock = lockRes.result();
-          Set<Mapping<Task, Resource>> validMappings =
+          final Set<Mapping<Task, Resource>> validMappings =
               specMappings.stream().filter(m -> isValidMapping(m)).collect(Collectors.toSet());
           result.addAll(chooseMappingSubset(task, getTaskMappingOptions(validMappings, task)));
           result.forEach(m -> PropertyServiceResource.addUsingTask(task, m.getTarget()));
@@ -85,7 +85,7 @@ public abstract class SchedulerAbstract implements Scheduler {
    * @param mapping the given mapping
    * @return true if the mapping affects the resource capacity
    */
-  protected boolean isCapacityRelevant(Mapping<Task, Resource> mapping) {
+  protected boolean isCapacityRelevant(final Mapping<Task, Resource> mapping) {
     return PropertyServiceResource.hasLimitedCapacity(mapping.getTarget())
         && !PropertyServiceFunction.hasNegligibleWorkload(mapping.getSource());
   }
@@ -97,13 +97,13 @@ public abstract class SchedulerAbstract implements Scheduler {
    * @param mapping the given mapping
    * @return true iff the given mapping can be used at the given moment
    */
-  protected boolean isValidMapping(Mapping<Task, Resource> mapping) {
-    Resource targetRes = mapping.getTarget();
-    Set<String> alreadyOnResource = PropertyServiceResource.getUsingTaskIds(targetRes);
-    double unavailableCapacity = alreadyOnResource.stream()
+  protected boolean isValidMapping(final Mapping<Task, Resource> mapping) {
+    final Resource targetRes = mapping.getTarget();
+    final Set<String> alreadyOnResource = PropertyServiceResource.getUsingTaskIds(targetRes);
+    final double unavailableCapacity = alreadyOnResource.stream()
         .map(taskId -> specification.getEnactmentGraph().getVertex(taskId))
         .mapToDouble(task -> capacityCalculator.getCapacityFraction(task, targetRes)).sum();
-    double requiredCapacity =
+    final double requiredCapacity =
         capacityCalculator.getCapacityFraction(mapping.getSource(), targetRes);
     return requiredCapacity + unavailableCapacity <= 1.0;
   }

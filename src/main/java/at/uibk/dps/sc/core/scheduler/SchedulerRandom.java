@@ -39,7 +39,7 @@ public class SchedulerRandom extends SchedulerAbstract {
   public SchedulerRandom(final SpecificationProvider specProvider, final Random random,
       @Constant(namespace = SchedulerRandom.class,
           value = "mappingsToPick") final int mappingsToPick,
-      final CapacityCalculator capCalc, VertxProvider vProv) {
+      final CapacityCalculator capCalc, final VertxProvider vProv) {
     super(specProvider, capCalc, vProv);
     this.random = random;
     this.mappingsToPick = mappingsToPick;

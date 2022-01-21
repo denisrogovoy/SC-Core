@@ -15,7 +15,7 @@ import net.sf.opendse.model.Task;
 public class CapacityCalculatorNone extends CapacityCalculatorAbstract {
 
   @Override
-  protected double getNonTrivialCapacityFraction(Task task, Resource res) {
+  protected double getNonTrivialCapacityFraction(final Task task, final Resource res) {
     return 0;
   }
 }

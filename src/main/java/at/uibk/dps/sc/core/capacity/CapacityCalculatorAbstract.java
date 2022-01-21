@@ -14,7 +14,7 @@ import net.sf.opendse.model.Task;
 public abstract class CapacityCalculatorAbstract implements CapacityCalculator {
 
   @Override
-  public final double getCapacityFraction(Task task, Resource resource) {
+  public final double getCapacityFraction(final Task task, final Resource resource) {
     if (!PropertyServiceResource.hasLimitedCapacity(resource)
         || PropertyServiceFunction.hasNegligibleWorkload(task)) {
       return 0;

@@ -17,14 +17,17 @@ public class CapacityCalculatorTaskNumber extends CapacityCalculatorAbstract {
 
   protected final int maximalTaskNumber;
 
+  /**
+   * Constructor to set the max task number
+   */
   @Inject
   public CapacityCalculatorTaskNumber(@Constant(value = "maxTaskNumber",
-      namespace = CapacityCalculatorTaskNumber.class) int maximalTaskNumber) {
+      namespace = CapacityCalculatorTaskNumber.class) final int maximalTaskNumber) {
     this.maximalTaskNumber = maximalTaskNumber;
   }
 
   @Override
-  protected double getNonTrivialCapacityFraction(Task task, Resource res) {
+  protected double getNonTrivialCapacityFraction(final Task task, final Resource res) {
     return 1.0 / maximalTaskNumber;
   }
 }

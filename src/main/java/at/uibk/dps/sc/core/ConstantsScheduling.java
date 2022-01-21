@@ -8,8 +8,10 @@ package at.uibk.dps.sc.core;
  */
 public final class ConstantsScheduling {
 
-  private ConstantsScheduling() {}
-
   public static final String lockCapacityQuery = "capacityQuery";
-
+  
+  /**
+   * No constructor
+   */
+  private ConstantsScheduling() {}
 }
