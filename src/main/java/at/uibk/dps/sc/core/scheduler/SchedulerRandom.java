@@ -9,6 +9,7 @@ import java.util.stream.IntStream;
 import org.opt4j.core.start.Constant;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import at.uibk.dps.ee.guice.starter.VertxProvider;
 import at.uibk.dps.ee.model.graph.SpecificationProvider;
 import at.uibk.dps.sc.core.capacity.CapacityCalculator;
 import net.sf.opendse.model.Mapping;
@@ -38,8 +39,8 @@ public class SchedulerRandom extends SchedulerAbstract {
   public SchedulerRandom(final SpecificationProvider specProvider, final Random random,
       @Constant(namespace = SchedulerRandom.class,
           value = "mappingsToPick") final int mappingsToPick,
-      final CapacityCalculator capCalc) {
-    super(specProvider, capCalc);
+      final CapacityCalculator capCalc, VertxProvider vProv) {
+    super(specProvider, capCalc, vProv);
     this.random = random;
     this.mappingsToPick = mappingsToPick;
   }

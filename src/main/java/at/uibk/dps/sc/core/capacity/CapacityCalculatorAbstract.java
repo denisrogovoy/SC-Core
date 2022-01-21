@@ -16,7 +16,7 @@ public abstract class CapacityCalculatorAbstract implements CapacityCalculator {
   @Override
   public final double getCapacityFraction(Task task, Resource resource) {
     if (!PropertyServiceResource.hasLimitedCapacity(resource)
-        || PropertyServiceFunction.hasNeglectableWorkload(task)) {
+        || PropertyServiceFunction.hasNegligibleWorkload(task)) {
       return 0;
     } else {
       return getNonTrivialCapacityFraction(task, resource);

@@ -41,6 +41,9 @@ dependencies {
   // dependency to opendse
   implementation 'com.github.FedorSmirnov89:opendse:-SNAPSHOT'
   implementation 'com.google.code.gson:gson:2.8.6'
+  
+  // VertX
+  implementation 'io.vertx:vertx-core:4.1.0'
 
 
   // test dependencies

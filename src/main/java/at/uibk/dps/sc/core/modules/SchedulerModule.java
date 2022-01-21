@@ -9,6 +9,7 @@ import at.uibk.dps.sc.core.interpreter.ScheduleInterpreterUser;
 import at.uibk.dps.sc.core.interpreter.ScheduleInterpreterUserSingle;
 import at.uibk.dps.sc.core.scheduler.Scheduler;
 import at.uibk.dps.sc.core.scheduler.SchedulerDataSize;
+import at.uibk.dps.sc.core.scheduler.SchedulerLocalRes;
 import at.uibk.dps.sc.core.scheduler.SchedulerRandom;
 import at.uibk.dps.sc.core.scheduler.SchedulerSingleOption;
 
@@ -38,7 +39,11 @@ public class SchedulerModule extends EeModule {
     /**
      * Size threshold (should actually be a transmission option)
      */
-    SizeConstraint
+    SizeConstraint,
+    /**
+     * Preferably uses resources with capacity limitations
+     */
+    LocalResources
   }
 
   @Order(1)
@@ -50,7 +55,7 @@ public class SchedulerModule extends EeModule {
   @Constant(namespace = SchedulerRandom.class, value = "mappingsToPick")
   @Required(property = "schedulingMode", elements = {"Random", "SizeConstraint"})
   public int mappingsToPick = 1;
-  
+
   @Order(3)
   @Info("Threshold in KB. Anything with an input with a larger size will be processed locally")
   @Constant(namespace = SchedulerDataSize.class, value = "sizeThreshold")
@@ -66,6 +71,8 @@ public class SchedulerModule extends EeModule {
       bind(Scheduler.class).to(SchedulerRandom.class);
     } else if (schedulingMode.equals(SchedulingMode.SizeConstraint)) {
       bind(Scheduler.class).to(SchedulerDataSize.class);
+    } else if (schedulingMode.equals(SchedulingMode.LocalResources)) {
+      bind(Scheduler.class).to(SchedulerLocalRes.class);
     }
   }
 

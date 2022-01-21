@@ -20,10 +20,10 @@ class CapacityCalculatorAbstractTest {
   void test() {
     Task negligible = new Task("negligible");
     Task notNegligible = new Task("notNegligible");
-    PropertyServiceFunction.annotateNonNeglectableWorkload(notNegligible);
+    PropertyServiceFunction.annotateNonNegligibleWorkload(notNegligible);
     Resource unlimited = new Resource("unlimited");
     Resource limited = new Resource("limited");
-    PropertyServiceResource.annotateCapacityLimitation(limited);
+    PropertyServiceResource.annotateUnlimitedCapacity(unlimited);
     CapacityCalculatorMock tested = new CapacityCalculatorMock();
     assertEquals(0.0, tested.getCapacityFraction(negligible, unlimited), 0.0);
     assertEquals(0.0, tested.getCapacityFraction(notNegligible, unlimited), 0.0);

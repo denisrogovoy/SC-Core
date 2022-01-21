@@ -3,6 +3,7 @@ package at.uibk.dps.sc.core.scheduler;
 import java.util.HashSet;
 import java.util.Set;
 import java.util.stream.Collectors;
+import at.uibk.dps.ee.guice.starter.VertxProvider;
 import at.uibk.dps.ee.model.graph.EnactmentGraph;
 import at.uibk.dps.ee.model.graph.EnactmentSpecification;
 import at.uibk.dps.ee.model.graph.SpecificationProvider;
@@ -10,7 +11,12 @@ import at.uibk.dps.ee.model.properties.PropertyServiceFunction;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunction.UsageType;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunctionUser;
 import at.uibk.dps.ee.model.properties.PropertyServiceResource;
+import at.uibk.dps.sc.core.ConstantsScheduling;
 import at.uibk.dps.sc.core.capacity.CapacityCalculator;
+import io.vertx.core.Future;
+import io.vertx.core.Promise;
+import io.vertx.core.Vertx;
+import io.vertx.core.shareddata.Lock;
 import net.sf.opendse.model.Mapping;
 import net.sf.opendse.model.Resource;
 import net.sf.opendse.model.Task;
@@ -25,6 +31,7 @@ public abstract class SchedulerAbstract implements Scheduler {
 
   protected final EnactmentSpecification specification;
   protected final CapacityCalculator capacityCalculator;
+  protected final Vertx vertx;
 
   /**
    * Default constructor
@@ -32,14 +39,18 @@ public abstract class SchedulerAbstract implements Scheduler {
    * @param specProvider specification provider
    */
   public SchedulerAbstract(final SpecificationProvider specProvider,
-      CapacityCalculator capacityCalculator) {
+      CapacityCalculator capacityCalculator, VertxProvider vertProv) {
     this.specification = specProvider.getSpecification();
     this.capacityCalculator = capacityCalculator;
+    this.vertx = vertProv.getVertx();
   }
 
   @Override
-  public Set<Mapping<Task, Resource>> scheduleTask(final Task task) {
+  public Future<Set<Mapping<Task, Resource>>> scheduleTask(final Task task) {
+    Promise<Set<Mapping<Task, Resource>>> resultPromise = Promise.promise();
+    final Set<Mapping<Task, Resource>> result = new HashSet<>();
     if (PropertyServiceFunction.getUsageType(task).equals(UsageType.User)) {
+      // user task -> scheduled based on mappings
       final Task taskKey = getOriginalTask(task);
       final Set<Mapping<Task, Resource>> specMappings =
           specification.getMappings().getMappings(taskKey);
@@ -47,12 +58,36 @@ public abstract class SchedulerAbstract implements Scheduler {
         throw new IllegalStateException(
             "No mapping options provided for the task " + taskKey.getId());
       }
-      Set<Mapping<Task, Resource>> validMappings =
-          specMappings.stream().filter(m -> isValidMapping(m)).collect(Collectors.toSet());
-      return chooseMappingSubset(task, getTaskMappingOptions(validMappings, task));
+      // synchronized capacity look up + task placement
+      this.vertx.sharedData().getLock(ConstantsScheduling.lockCapacityQuery, lockRes -> {
+        if (lockRes.succeeded()) {
+          final Lock capacityLock = lockRes.result();
+          Set<Mapping<Task, Resource>> validMappings =
+              specMappings.stream().filter(m -> isValidMapping(m)).collect(Collectors.toSet());
+          result.addAll(chooseMappingSubset(task, getTaskMappingOptions(validMappings, task)));
+          result.forEach(m -> PropertyServiceResource.addUsingTask(task, m.getTarget()));
+          resultPromise.complete(result);
+          capacityLock.release();
+        } else {
+          throw new IllegalStateException("Failed to get capacity query lock");
+        }
+      });
     } else {
-      return new HashSet<>();
+      // not a user task -> no scheduling
+      resultPromise.complete(result);
     }
+    return resultPromise.future();
+  }
+
+  /**
+   * Predicate for mappings affecting the resource capacity.
+   * 
+   * @param mapping the given mapping
+   * @return true if the mapping affects the resource capacity
+   */
+  protected boolean isCapacityRelevant(Mapping<Task, Resource> mapping) {
+    return PropertyServiceResource.hasLimitedCapacity(mapping.getTarget())
+        && !PropertyServiceFunction.hasNegligibleWorkload(mapping.getSource());
   }
 
   /**
@@ -70,7 +105,7 @@ public abstract class SchedulerAbstract implements Scheduler {
         .mapToDouble(task -> capacityCalculator.getCapacityFraction(task, targetRes)).sum();
     double requiredCapacity =
         capacityCalculator.getCapacityFraction(mapping.getSource(), targetRes);
-    return requiredCapacity + unavailableCapacity < 1.0;
+    return requiredCapacity + unavailableCapacity <= 1.0;
   }
 
 

@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 import com.google.inject.Inject;
 import com.google.inject.Singleton;
+import at.uibk.dps.ee.guice.starter.VertxProvider;
 import at.uibk.dps.ee.model.graph.SpecificationProvider;
 import at.uibk.dps.sc.core.capacity.CapacityCalculator;
 import net.sf.opendse.model.Mapping;
@@ -25,8 +26,8 @@ public class SchedulerSingleOption extends SchedulerAbstract {
    */
   @Inject
   public SchedulerSingleOption(final SpecificationProvider specProvider,
-      final CapacityCalculator capCalc) {
-    super(specProvider, capCalc);
+      final CapacityCalculator capCalc, VertxProvider vProv) {
+    super(specProvider, capCalc, vProv);
   }
 
   @Override

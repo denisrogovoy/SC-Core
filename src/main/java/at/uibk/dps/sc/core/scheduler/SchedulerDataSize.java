@@ -6,6 +6,7 @@ import java.util.stream.Collectors;
 import org.opt4j.core.start.Constant;
 import com.google.gson.JsonObject;
 import com.google.inject.Inject;
+import at.uibk.dps.ee.guice.starter.VertxProvider;
 import at.uibk.dps.ee.model.graph.SpecificationProvider;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunction;
 import at.uibk.dps.ee.model.properties.PropertyServiceMapping;
@@ -40,8 +41,8 @@ public class SchedulerDataSize extends SchedulerRandom {
           value = "mappingsToPick") final int mappingsToPick,
       @Constant(namespace = SchedulerDataSize.class,
           value = "sizeThreshold") final int sizeThreshold,
-      final CapacityCalculator capCalc) {
-    super(specProvider, random, mappingsToPick, capCalc);
+      final CapacityCalculator capCalc, VertxProvider vProv) {
+    super(specProvider, random, mappingsToPick, capCalc, vProv);
     this.sizeThresholdKb = sizeThreshold;
   }
 
