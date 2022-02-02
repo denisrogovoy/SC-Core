@@ -5,6 +5,8 @@ import org.opt4j.core.config.annotations.Order;
 import org.opt4j.core.config.annotations.Required;
 import org.opt4j.core.start.Constant;
 import at.uibk.dps.ee.guice.modules.EeModule;
+import at.uibk.dps.sc.core.arbitration.ResourceArbiter;
+import at.uibk.dps.sc.core.arbitration.ResourceArbiterFCFS;
 import at.uibk.dps.sc.core.interpreter.ScheduleInterpreterUser;
 import at.uibk.dps.sc.core.interpreter.ScheduleInterpreterUserSingle;
 import at.uibk.dps.sc.core.scheduler.Scheduler;
@@ -46,6 +48,19 @@ public class SchedulerModule extends EeModule {
     LocalResources
   }
 
+  /**
+   * Enum defining the different resource arbitration schemes.
+   * 
+   * @author Fedor Smirnov
+   *
+   */
+  public enum ResourceArbitration {
+    /**
+     * First come first serve (best-effort)
+     */
+    FCFS
+  }
+
   @Order(1)
   @Info("The mode used to schedule user tasks.")
   public SchedulingMode schedulingMode = SchedulingMode.SingleOption;
@@ -62,6 +77,10 @@ public class SchedulerModule extends EeModule {
   @Required(property = "schedulingMode", elements = "SizeConstraint")
   public int sizeThresholdKb = 10;
 
+  @Order(4)
+  @Info("The mode used to arbitrate shared resources between tasks.")
+  public ResourceArbitration resourceArbitration = ResourceArbitration.FCFS;
+
   @Override
   protected void config() {
     bind(ScheduleInterpreterUser.class).to(ScheduleInterpreterUserSingle.class);
@@ -74,6 +93,17 @@ public class SchedulerModule extends EeModule {
     } else if (schedulingMode.equals(SchedulingMode.LocalResources)) {
       bind(Scheduler.class).to(SchedulerLocalRes.class);
     }
+    if (resourceArbitration.equals(ResourceArbitration.FCFS)) {
+      bind(ResourceArbiter.class).to(ResourceArbiterFCFS.class);
+    }
+  }
+
+  public ResourceArbitration getResourceArbitration() {
+    return resourceArbitration;
+  }
+
+  public void setResourceArbitration(ResourceArbitration resourceArbitration) {
+    this.resourceArbitration = resourceArbitration;
   }
 
   public SchedulingMode getSchedulingMode() {

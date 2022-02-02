@@ -13,6 +13,7 @@ import at.uibk.dps.ee.model.properties.PropertyServiceFunctionUser;
 import at.uibk.dps.ee.model.properties.PropertyServiceResource;
 import at.uibk.dps.sc.core.ConstantsScheduling;
 import at.uibk.dps.sc.core.capacity.CapacityCalculator;
+import at.uibk.dps.sc.core.capacity.CapacityLimitException;
 import io.vertx.core.Future;
 import io.vertx.core.Promise;
 import io.vertx.core.Vertx;
@@ -64,9 +65,11 @@ public abstract class SchedulerAbstract implements Scheduler {
           final Lock capacityLock = lockRes.result();
           final Set<Mapping<Task, Resource>> validMappings =
               specMappings.stream().filter(m -> isValidMapping(m)).collect(Collectors.toSet());
-          result.addAll(chooseMappingSubset(task, getTaskMappingOptions(validMappings, task)));
-          result.forEach(m -> PropertyServiceResource.addUsingTask(task, m.getTarget()));
-          resultPromise.complete(result);
+          if (validMappings.isEmpty()) {
+            placeTaskInWaitList(task, resultPromise);
+          } else {
+            scheduleSuccess(validMappings, task, resultPromise);
+          }
           capacityLock.release();
         } else {
           throw new IllegalStateException("Failed to get capacity query lock");
@@ -77,6 +80,32 @@ public abstract class SchedulerAbstract implements Scheduler {
       resultPromise.complete(result);
     }
     return resultPromise.future();
+  }
+
+  /**
+   * Places the task (which is unschedulable for now due to capacity limits) into
+   * the waiting list
+   * 
+   * @param task the scheduled task
+   * @param promise the promise made to the scheduling verticle
+   */
+  protected void placeTaskInWaitList(Task task, Promise<Set<Mapping<Task, Resource>>> promise) {
+    promise.fail(new CapacityLimitException(task));
+  }
+
+  /**
+   * Called to inform the scheduling verticle of the chosen schedule.
+   * 
+   * @param schedule the chosen schedule
+   * @param task the task being scheduled
+   * @param promise the promise made to the scheduling verticle
+   */
+  protected void scheduleSuccess(Set<Mapping<Task, Resource>> schedule, Task task,
+      Promise<Set<Mapping<Task, Resource>>> promise) {
+    Set<Mapping<Task, Resource>> result = new HashSet<>();
+    result.addAll(chooseMappingSubset(task, getTaskMappingOptions(schedule, task)));
+    result.forEach(m -> PropertyServiceResource.addUsingTask(task, m.getTarget()));
+    promise.complete(result);
   }
 
   /**
