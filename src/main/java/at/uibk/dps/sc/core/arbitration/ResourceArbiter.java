@@ -13,13 +13,15 @@ import net.sf.opendse.model.Task;
 public interface ResourceArbiter {
 
   /**
-   * Returns the task which is to be scheduled next on the given resource
+   * Returns a list where the tasks from the given waiting list are arranged
+   * according to their priority (the scheduler will TRY to execute the tasks at
+   * the start of the list first)
    * 
    * @param candidates the list of candidate tasks (ordered following the order of
    *        arrival -- tasks waiting for a longer time are at closer to the start
    *        of the list)
    * @param res the resource the tasks are waiting for
-   * @return the task to schedule at the resource next
+   * @return the list prioritizing the tasks
    */
-  Task chooseTask(List<Task> candidates, Resource res);
+  List<Task> prioritizeTasks(List<Task> candidates, Resource res);
 }

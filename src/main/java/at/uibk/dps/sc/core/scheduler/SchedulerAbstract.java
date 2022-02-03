@@ -109,17 +109,6 @@ public abstract class SchedulerAbstract implements Scheduler {
   }
 
   /**
-   * Predicate for mappings affecting the resource capacity.
-   * 
-   * @param mapping the given mapping
-   * @return true if the mapping affects the resource capacity
-   */
-  protected boolean isCapacityRelevant(final Mapping<Task, Resource> mapping) {
-    return PropertyServiceResource.hasLimitedCapacity(mapping.getTarget())
-        && !PropertyServiceFunction.hasNegligibleWorkload(mapping.getSource());
-  }
-
-  /**
    * Returns true if the given mapping can be used at the current moment (used to
    * consider resource capacity by default)
    * 
