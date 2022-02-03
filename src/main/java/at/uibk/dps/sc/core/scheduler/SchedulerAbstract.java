@@ -103,7 +103,7 @@ public abstract class SchedulerAbstract implements Scheduler {
   protected void scheduleSuccess(Set<Mapping<Task, Resource>> schedule, Task task,
       Promise<Set<Mapping<Task, Resource>>> promise) {
     Set<Mapping<Task, Resource>> result = new HashSet<>();
-    result.addAll(chooseMappingSubset(task, getTaskMappingOptions(schedule, task)));
+    result.addAll(chooseMappingSubset(task, schedule));
     result.forEach(m -> PropertyServiceResource.addUsingTask(task, m.getTarget()));
     promise.complete(result);
   }
@@ -124,30 +124,6 @@ public abstract class SchedulerAbstract implements Scheduler {
     final double requiredCapacity =
         capacityCalculator.getCapacityFraction(mapping.getSource(), targetRes);
     return requiredCapacity + unavailableCapacity <= 1.0;
-  }
-
-
-
-  /**
-   * Returns the mappings annotated for the given task in the specification
-   * (checks the parent task in case no mappings are found).
-   * 
-   * @param task the task to check
-   * @return the mappings annotated for the given task in the specification
-   *         (checks the parent task in case no mappings are found)
-   */
-  protected Set<Mapping<Task, Resource>> getTaskMappingOptions(
-      final Set<Mapping<Task, Resource>> taskMappings, final Task task) {
-    final Set<Mapping<Task, Resource>> result = new HashSet<>(taskMappings);
-    if (result.isEmpty()) {
-      if (task.getParent() == null) {
-        throw new IllegalArgumentException("No mappings provided for the task " + task.getId());
-      } else {
-        return getTaskMappingOptions(taskMappings, (Task) task.getParent());
-      }
-    } else {
-      return result;
-    }
   }
 
   /**

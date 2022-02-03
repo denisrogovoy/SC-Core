@@ -96,41 +96,6 @@ public class SchedulerAbstractTest {
   }
 
   @Test
-  public void testGetTaskMappingOptions() {
-    Task parent = new Task("parent");
-    Task child = new Task("child");
-    child.setParent(parent);
-
-    Resource res = new Resource("res");
-    Mapping<Task, Resource> mapping = new Mapping<Task, Resource>("mapping", parent, res);
-    Set<Mapping<Task, Resource>> mappings = new HashSet<>();
-    mappings.add(mapping);
-
-    SpecificationProvider mock = mock(SpecificationProvider.class);
-    EnactmentSpecification enactSpec = new EnactmentSpecification(new EnactmentGraph(),
-        new ResourceGraph(), new MappingsConcurrent(), "");
-    when(mock.getSpecification()).thenReturn(enactSpec);
-    SchedulerMock tested = new SchedulerMock(mock, vProv);
-
-    assertEquals(mapping, tested.getTaskMappingOptions(mappings, parent).iterator().next());
-    assertEquals(mapping, tested.getTaskMappingOptions(mappings, child).iterator().next());
-  }
-
-  @Test
-  public void testGetTaskMappingOptionsExc() {
-    assertThrows(IllegalArgumentException.class, () -> {
-      Task child = new Task("child");
-      Set<Mapping<Task, Resource>> mappings = new HashSet<>();
-      SpecificationProvider mock = mock(SpecificationProvider.class);
-      EnactmentSpecification enactSpec = new EnactmentSpecification(new EnactmentGraph(),
-          new ResourceGraph(), new MappingsConcurrent(), "");
-      when(mock.getSpecification()).thenReturn(enactSpec);
-      SchedulerMock tested = new SchedulerMock(mock, vProv);
-      tested.getTaskMappingOptions(mappings, child);
-    });
-  }
-
-  @Test
   public void testUser() throws InterruptedException {
     Task task = PropertyServiceFunctionUser.createUserTask("task", "addition");
     Resource res = new Resource("res");
