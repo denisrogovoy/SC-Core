@@ -102,7 +102,7 @@ public class SchedulerModule extends EeModule {
     return resourceArbitration;
   }
 
-  public void setResourceArbitration(ResourceArbitration resourceArbitration) {
+  public void setResourceArbitration(final ResourceArbitration resourceArbitration) {
     this.resourceArbitration = resourceArbitration;
   }
 

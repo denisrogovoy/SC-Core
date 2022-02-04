@@ -16,9 +16,9 @@ import net.sf.opendse.model.Task;
 public class ResourceArbiterFCFS implements ResourceArbiter {
 
   @Override
-  public List<Task> prioritizeTasks(List<Task> candidates, Resource res) {
-    // return a copy of the input, since it is already ordered following the arrival
-    // time
+  public List<Task> prioritizeTasks(final List<Task> candidates, final Resource res) {
+    // returns a copy of the input, since it is already ordered following the
+    // arrival time
     return new ArrayList<>(candidates);
   }
 }

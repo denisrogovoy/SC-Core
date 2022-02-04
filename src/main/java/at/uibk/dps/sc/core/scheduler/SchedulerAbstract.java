@@ -89,7 +89,8 @@ public abstract class SchedulerAbstract implements Scheduler {
    * @param task the scheduled task
    * @param promise the promise made to the scheduling verticle
    */
-  protected void placeTaskInWaitList(Task task, Promise<Set<Mapping<Task, Resource>>> promise) {
+  protected void placeTaskInWaitList(final Task task,
+      final Promise<Set<Mapping<Task, Resource>>> promise) {
     promise.fail(new CapacityLimitException(task));
   }
 
@@ -100,9 +101,9 @@ public abstract class SchedulerAbstract implements Scheduler {
    * @param task the task being scheduled
    * @param promise the promise made to the scheduling verticle
    */
-  protected void scheduleSuccess(Set<Mapping<Task, Resource>> schedule, Task task,
-      Promise<Set<Mapping<Task, Resource>>> promise) {
-    Set<Mapping<Task, Resource>> result = new HashSet<>();
+  protected void scheduleSuccess(final Set<Mapping<Task, Resource>> schedule, final Task task,
+      final Promise<Set<Mapping<Task, Resource>>> promise) {
+    final Set<Mapping<Task, Resource>> result = new HashSet<>();
     result.addAll(chooseMappingSubset(task, schedule));
     result.forEach(m -> PropertyServiceResource.addUsingTask(task, m.getTarget()));
     promise.complete(result);
