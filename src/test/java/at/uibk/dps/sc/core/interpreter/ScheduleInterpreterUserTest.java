@@ -2,39 +2,25 @@ package at.uibk.dps.sc.core.interpreter;
 
 import java.util.HashSet;
 import java.util.Set;
+import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
-import org.mockito.Mockito;
 import at.uibk.dps.ee.core.function.EnactmentFunction;
 import at.uibk.dps.ee.enactables.FactoryInputUser;
-import at.uibk.dps.ee.enactables.FunctionAbstract;
-import at.uibk.dps.ee.enactables.local.container.ContainerFunction;
-import at.uibk.dps.ee.enactables.local.container.FunctionFactoryLocal;
-import at.uibk.dps.ee.enactables.local.demo.FunctionFactoryDemo;
-import at.uibk.dps.ee.enactables.serverless.FunctionFactoryServerless;
-import at.uibk.dps.ee.enactables.serverless.ServerlessFunction;
-import at.uibk.dps.ee.model.constants.ConstantsEEModel;
-import at.uibk.dps.ee.model.properties.PropertyServiceFunctionUser;
-import at.uibk.dps.ee.model.properties.PropertyServiceMapping;
-import at.uibk.dps.ee.model.properties.PropertyServiceMapping.EnactmentMode;
-import at.uibk.dps.ee.model.properties.PropertyServiceResource;
-import at.uibk.dps.ee.model.properties.PropertyServiceResourceServerless;
+import at.uibk.dps.ee.enactables.FunctionFactoryUser;
 import net.sf.opendse.model.Mapping;
 import net.sf.opendse.model.Resource;
 import net.sf.opendse.model.Task;
 
 import static org.mockito.Mockito.mock;
 import static org.mockito.Mockito.when;
-import static org.mockito.Mockito.spy;
-
 import static org.junit.jupiter.api.Assertions.*;
 
 public class ScheduleInterpreterUserTest {
 
   protected static class InterpreterMock extends ScheduleInterpreterUser {
 
-    public InterpreterMock(FunctionFactoryLocal localFunctionFactory,
-        FunctionFactoryServerless functionFacSl, FunctionFactoryDemo factoryDemo) {
-      super(localFunctionFactory, functionFacSl, factoryDemo);
+    public InterpreterMock(Set<FunctionFactoryUser> userFactories) {
+      super(userFactories);
     }
 
     @Override
@@ -44,74 +30,44 @@ public class ScheduleInterpreterUserTest {
     }
   }
 
-  @Test
-  public void getFunctionForMappingTest() {
-    Task task = PropertyServiceFunctionUser.createUserTask("task", "Addition");
-    Resource local = PropertyServiceResource.createResource("res");
-    Resource serverless =
-        PropertyServiceResourceServerless.createServerlessResource("res", "resLink");
-    Mapping<Task, Resource> localMapping = PropertyServiceMapping.createMapping(task, local,
-        EnactmentMode.Local, ConstantsEEModel.implIdLocalNative);
-    Mapping<Task, Resource> serverlessMapping =
-        PropertyServiceMapping.createMapping(task, serverless, EnactmentMode.Serverless, "resLink");
-    FunctionAbstract functionMockLockal = mock(FunctionAbstract.class);
-    FunctionFactoryLocal factoryMock = mock(FunctionFactoryLocal.class);
-    FunctionFactoryServerless mockFacSl = mock(FunctionFactoryServerless.class);
-    FunctionFactoryDemo demoMock = mock(FunctionFactoryDemo.class);
-    InterpreterMock tested = new InterpreterMock(factoryMock, mockFacSl, demoMock);
-    InterpreterMock spy = spy(tested);
-    EnactmentFunction serverlessFunc = mock(EnactmentFunction.class);
-    Mockito.doReturn(serverlessFunc).when(spy).interpretServerless(task, serverlessMapping);
-    Mockito.doReturn(functionMockLockal).when(spy).interpretLocal(task, localMapping);
-    assertEquals(serverlessFunc, spy.getFunctionForMapping(task, serverlessMapping));
-    assertEquals(functionMockLockal, spy.getFunctionForMapping(task, localMapping));
-  }
+  FactoryInputUser factoryInput;
+  FunctionFactoryUser factoryApplicable;
+  FunctionFactoryUser factoryUnapplicable;
+  Set<FunctionFactoryUser> userFactories;
+  EnactmentFunction function;
 
-  @Test
-  public void interpretLocalTest() {
-    Task task = PropertyServiceFunctionUser.createUserTask("id", "Addition");
+  @BeforeEach
+  void setup() {
+    Task task = new Task("t");
     Resource res = new Resource("res");
-    ContainerFunction functionMock = mock(ContainerFunction.class);
-    FunctionFactoryLocal factoryMock = mock(FunctionFactoryLocal.class);
-    Mapping<Task, Resource> localMapping = new Mapping<Task, Resource>("bla", task, res);
-    FactoryInputUser localInput = new FactoryInputUser(task, localMapping);
-    when(factoryMock.makeFunction(localInput)).thenReturn(functionMock);
-    FunctionFactoryServerless mockFacSl = mock(FunctionFactoryServerless.class);
-    FunctionFactoryDemo demoMock = mock(FunctionFactoryDemo.class);
-    InterpreterMock tested = new InterpreterMock(factoryMock, mockFacSl, demoMock);
-    assertEquals(functionMock, tested.interpretLocal(task, localMapping));
+    Mapping<Task, Resource> mapping = new Mapping<Task, Resource>("mapping", task, res);
+    factoryInput = new FactoryInputUser(task, mapping);
+    factoryApplicable = mock(FunctionFactoryUser.class);
+    when(factoryApplicable.isApplicable(factoryInput)).thenReturn(true);
+    factoryUnapplicable = mock(FunctionFactoryUser.class);
+    when(factoryUnapplicable.isApplicable(factoryInput)).thenReturn(false);
+    function = mock(EnactmentFunction.class);
+    when(factoryApplicable.makeFunction(factoryInput)).thenReturn(function);
+    userFactories = new HashSet<>();
+    userFactories.add(factoryApplicable);
+    userFactories.add(factoryUnapplicable);
   }
 
   @Test
-  public void interpretServerlessTest() {
-    Task task = PropertyServiceFunctionUser.createUserTask("task", "fancyType");
-    String resLink = "link";
-    Resource res = PropertyServiceResourceServerless.createServerlessResource("res", resLink);
-    Mapping<Task, Resource> mapping =
-        PropertyServiceMapping.createMapping(task, res, EnactmentMode.Serverless, resLink);
-    FunctionFactoryLocal factoryMock = mock(FunctionFactoryLocal.class);
-    FunctionFactoryServerless mockFacSl = mock(FunctionFactoryServerless.class);
-    ServerlessFunction slFuncMock = mock(ServerlessFunction.class);
-    when(mockFacSl.makeFunction(new FactoryInputUser(task, mapping))).thenReturn(slFuncMock);
-    FunctionFactoryDemo demoMock = mock(FunctionFactoryDemo.class);
-    InterpreterMock tested = new InterpreterMock(factoryMock, mockFacSl, demoMock);
-    assertEquals(slFuncMock, tested.interpretServerless(task, mapping));
+  public void testGetScheduleForMapping() {
+    InterpreterMock tested = new InterpreterMock(userFactories);
+    EnactmentFunction result =
+        tested.getFunctionForMapping(factoryInput.getTask(), factoryInput.getMapping());
+    assertEquals(function, result);
   }
 
   @Test
-  void interpretDemoTest() {
-    Task task = PropertyServiceFunctionUser.createUserTask("task", "fancyType");
-    String resLink = "link";
-    Resource res = new Resource("res");
-    Mapping<Task, Resource> mapping =
-        PropertyServiceMapping.createMapping(task, res, EnactmentMode.Demo, resLink);
-    FunctionFactoryLocal factoryMock = mock(FunctionFactoryLocal.class);
-    FunctionFactoryServerless mockFacSl = mock(FunctionFactoryServerless.class);
-    EnactmentFunction demoFuncMock = mock(EnactmentFunction.class);
-    FunctionFactoryDemo demoMock = mock(FunctionFactoryDemo.class);
-    when(demoMock.makeFunction(new FactoryInputUser(task, mapping))).thenReturn(demoFuncMock);
-    InterpreterMock tested = new InterpreterMock(factoryMock, mockFacSl, demoMock);
-    assertEquals(demoFuncMock, tested.getFunctionForMapping(task, mapping));
+  public void testGetSchedulerForMappingNoFactory() {
+    assertThrows(IllegalStateException.class, () -> {
+      userFactories.remove(factoryApplicable);
+      InterpreterMock tested = new InterpreterMock(userFactories);
+      tested.getFunctionForMapping(factoryInput.getTask(), factoryInput.getMapping());
+    });
   }
 
   @Test
@@ -119,10 +75,7 @@ public class ScheduleInterpreterUserTest {
     assertThrows(IllegalArgumentException.class, () -> {
       Task task = new Task("task");
       Set<Mapping<Task, Resource>> schedule = new HashSet<>();
-      FunctionFactoryServerless mockFacSl = mock(FunctionFactoryServerless.class);
-      FunctionFactoryDemo demoMock = mock(FunctionFactoryDemo.class);
-      InterpreterMock tested =
-          new InterpreterMock(mock(FunctionFactoryLocal.class), mockFacSl, demoMock);
+      InterpreterMock tested = new InterpreterMock(userFactories);
       tested.interpretSchedule(task, schedule);
     });
   }

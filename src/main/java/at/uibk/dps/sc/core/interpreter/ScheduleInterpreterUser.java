@@ -1,13 +1,10 @@
 package at.uibk.dps.sc.core.interpreter;
 
 import java.util.Set;
+import java.util.stream.Collectors;
 import at.uibk.dps.ee.core.function.EnactmentFunction;
 import at.uibk.dps.ee.enactables.FactoryInputUser;
-import at.uibk.dps.ee.enactables.local.container.FunctionFactoryLocal;
-import at.uibk.dps.ee.enactables.local.demo.FunctionFactoryDemo;
-import at.uibk.dps.ee.enactables.serverless.FunctionFactoryServerless;
-import at.uibk.dps.ee.model.properties.PropertyServiceMapping;
-import at.uibk.dps.ee.model.properties.PropertyServiceMapping.EnactmentMode;
+import at.uibk.dps.ee.enactables.FunctionFactoryUser;
 import net.sf.opendse.model.Mapping;
 import net.sf.opendse.model.Resource;
 import net.sf.opendse.model.Task;
@@ -20,9 +17,7 @@ import net.sf.opendse.model.Task;
  */
 public abstract class ScheduleInterpreterUser implements ScheduleInterpreter {
 
-  protected final FunctionFactoryLocal functionFactoryLocal;
-  protected final FunctionFactoryServerless functionFactorySl;
-  protected final FunctionFactoryDemo functionFactoryDemo;
+  protected final Set<FunctionFactoryUser> userFactories;
 
   /**
    * Default constructor.
@@ -33,12 +28,8 @@ public abstract class ScheduleInterpreterUser implements ScheduleInterpreter {
    *        implemented natively
    * @param functionFactorySl the factory for the creation of serverless functions
    */
-  public ScheduleInterpreterUser(final FunctionFactoryLocal functionFactoryLocal,
-      final FunctionFactoryServerless functionFactorySl,
-      final FunctionFactoryDemo functionFactoryDemo) {
-    this.functionFactoryLocal = functionFactoryLocal;
-    this.functionFactorySl = functionFactorySl;
-    this.functionFactoryDemo = functionFactoryDemo;
+  public ScheduleInterpreterUser(final Set<FunctionFactoryUser> userFactories) {
+    this.userFactories = userFactories;
   }
 
   @Override
@@ -70,39 +61,16 @@ public abstract class ScheduleInterpreterUser implements ScheduleInterpreter {
    */
   protected EnactmentFunction getFunctionForMapping(final Task task,
       final Mapping<Task, Resource> mapping) {
-    final EnactmentMode resType = PropertyServiceMapping.getEnactmentMode(mapping);
-    if (resType.equals(EnactmentMode.Local)) {
-      return interpretLocal(task, mapping);
-    } else if (resType.equals(EnactmentMode.Serverless)) {
-      return interpretServerless(task, mapping);
-    } else if (resType.equals(EnactmentMode.Demo)) {
-      return functionFactoryDemo.makeFunction(new FactoryInputUser(task, mapping));
-    } else {
-      throw new IllegalArgumentException("Unknown resource type " + resType.name());
+    FactoryInputUser factoryInput = new FactoryInputUser(task, mapping);
+    Set<FunctionFactoryUser> applicableFactories = userFactories.stream(). //
+        filter(uFactory -> uFactory.isApplicable(factoryInput)). //
+        collect(Collectors.toSet());
+    if (applicableFactories.size() != 1) {
+      throw new IllegalStateException(
+          "Not exactly one factory for task " + task.getId() + "; mapping " + mapping.getId());
     }
-  }
-
-  /**
-   * Gets the enactment function for the task on the local resource.
-   * 
-   * @param task the task
-   * @param mapping the mapping chosen for the task
-   * @return the enactment function for the task on the local resource
-   */
-  protected EnactmentFunction interpretLocal(final Task task,
-      final Mapping<Task, Resource> mapping) {
-    return functionFactoryLocal.makeFunction(new FactoryInputUser(task, mapping));
-  }
-
-  /**
-   * Gets the enactment function for the task on a serverless resource.
-   * 
-   * @param mapping the mapping
-   * @return the enactment function for the task on a serverless resource
-   */
-  protected EnactmentFunction interpretServerless(final Task task,
-      final Mapping<Task, Resource> mapping) {
-    return functionFactorySl.makeFunction(new FactoryInputUser(task, mapping));
+    FunctionFactoryUser factory = applicableFactories.iterator().next();
+    return factory.makeFunction(factoryInput);
   }
 
   /**
