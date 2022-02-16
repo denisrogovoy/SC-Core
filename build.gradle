@@ -34,7 +34,7 @@ dependencies {
   // dependency to opendse
   implementation 'com.github.FedorSmirnov89:opendse:master-SNAPSHOT'
   implementation 'com.google.code.gson:gson:2.8.6'
-  
+
   // VertX
   implementation 'io.vertx:vertx-core:4.1.0'
 
@@ -53,15 +53,17 @@ java {
 
 publishing {
   publications {
-      maven(MavenPublication) {
+    maven(MavenPublication) {
       from components.java
-      }
+    }
   }
 }
 
-wrapper {
-  gradleVersion = "6.8.3"
-  distributionType = Wrapper.DistributionType.ALL
+if (rootProject == project) {
+  wrapper {
+    gradleVersion = "6.8.3"
+    distributionType = Wrapper.DistributionType.ALL
+  }
 }
 
 test {
