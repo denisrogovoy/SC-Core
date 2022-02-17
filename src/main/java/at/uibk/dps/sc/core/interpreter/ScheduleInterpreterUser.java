@@ -61,8 +61,8 @@ public abstract class ScheduleInterpreterUser implements ScheduleInterpreter {
    */
   protected EnactmentFunction getFunctionForMapping(final Task task,
       final Mapping<Task, Resource> mapping) {
-    FactoryInputUser factoryInput = new FactoryInputUser(task, mapping);
-    Set<FunctionFactoryUser> applicableFactories = userFactories.stream(). //
+    final FactoryInputUser factoryInput = new FactoryInputUser(task, mapping);
+    final Set<FunctionFactoryUser> applicableFactories = userFactories.stream(). //
         filter(uFactory -> uFactory.isApplicable(factoryInput)). //
         collect(Collectors.toSet());
     if (applicableFactories.size() != 1) {
@@ -70,7 +70,7 @@ public abstract class ScheduleInterpreterUser implements ScheduleInterpreter {
           "Not exactly one factory for task " + task.getId() + "; mapping " + mapping.getId()
               + ". Number of factories: " + applicableFactories.size());
     }
-    FunctionFactoryUser factory = applicableFactories.iterator().next();
+    final FunctionFactoryUser factory = applicableFactories.iterator().next();
     return factory.makeFunction(factoryInput);
   }
 
