@@ -67,7 +67,8 @@ public abstract class ScheduleInterpreterUser implements ScheduleInterpreter {
         collect(Collectors.toSet());
     if (applicableFactories.size() != 1) {
       throw new IllegalStateException(
-          "Not exactly one factory for task " + task.getId() + "; mapping " + mapping.getId());
+          "Not exactly one factory for task " + task.getId() + "; mapping " + mapping.getId()
+              + ". Number of factories: " + applicableFactories.size());
     }
     FunctionFactoryUser factory = applicableFactories.iterator().next();
     return factory.makeFunction(factoryInput);
