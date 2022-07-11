@@ -45,7 +45,9 @@ public class SchedulerModule extends EeModule {
     /**
      * Preferably uses resources with capacity limitations
      */
-    LocalResources
+    LocalResources,
+
+    TextBatches
   }
 
   /**
@@ -81,6 +83,12 @@ public class SchedulerModule extends EeModule {
   @Info("The mode used to arbitrate shared resources between tasks.")
   public ResourceArbitration resourceArbitration = ResourceArbitration.FCFS;
 
+  @Order(5)
+  @Info("Batch size")
+  @Constant(namespace = SchedulerDataSize.class, value = "batchSize")
+  @Required(property = "schedulingMode", elements = "BatchSize")
+  public int batchSize = 10;
+
   @Override
   protected void config() {
     bind(ScheduleInterpreterUser.class).to(ScheduleInterpreterUserSingle.class);
@@ -92,6 +100,8 @@ public class SchedulerModule extends EeModule {
       bind(Scheduler.class).to(SchedulerDataSize.class);
     } else if (schedulingMode.equals(SchedulingMode.LocalResources)) {
       bind(Scheduler.class).to(SchedulerLocalRes.class);
+    } else if (schedulingMode.equals(SchedulingMode.BatchSize)) {
+      bind(Scheduler.class).to(SchedulerTextBatches.class);
     }
     if (resourceArbitration.equals(ResourceArbitration.FCFS)) {
       bind(ResourceArbiter.class).to(ResourceArbiterFCFS.class);
@@ -128,5 +138,13 @@ public class SchedulerModule extends EeModule {
 
   public void setSizeThresholdKb(final int sizeThresholdKb) {
     this.sizeThresholdKb = sizeThresholdKb;
+  }
+
+  public int getbatchSize() {
+    return batchSize;
+  }
+
+  public void setbatchSize(final int batchSize) {
+    this.batchSize = batchSize;
   }
 }
