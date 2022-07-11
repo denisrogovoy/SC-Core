@@ -14,6 +14,7 @@ import at.uibk.dps.sc.core.scheduler.SchedulerDataSize;
 import at.uibk.dps.sc.core.scheduler.SchedulerLocalRes;
 import at.uibk.dps.sc.core.scheduler.SchedulerRandom;
 import at.uibk.dps.sc.core.scheduler.SchedulerSingleOption;
+import at.uibk.dps.sc.core.scheduler.SchedulerTextBatches;
 
 /**
  * The {@link SchedulerModule} configures the binding of the scheduling-related
