@@ -48,7 +48,7 @@ public class SchedulerModule extends EeModule {
      */
     LocalResources,
 
-    TextBatches
+    BatchSize
   }
 
   /**
