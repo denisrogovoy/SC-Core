@@ -10,12 +10,14 @@ import com.google.inject.Inject;
 import at.uibk.dps.ee.guice.starter.VertxProvider;
 import at.uibk.dps.ee.model.graph.SpecificationProvider;
 import at.uibk.dps.ee.model.properties.PropertyServiceFunction;
+import at.uibk.dps.ee.model.properties.PropertyServiceFunction.UsageType;
 import at.uibk.dps.ee.model.properties.PropertyServiceMapping;
 import at.uibk.dps.ee.model.properties.PropertyServiceMapping.EnactmentMode;
 import at.uibk.dps.sc.core.capacity.CapacityCalculator;
 import net.sf.opendse.model.Mapping;
 import net.sf.opendse.model.Resource;
 import net.sf.opendse.model.Task;
+
 
 /**
  * Random scheduler which excludes the serverless options in case they exceed a
@@ -26,7 +28,8 @@ import net.sf.opendse.model.Task;
  */
 public class SchedulerTextBatches extends SchedulerRandom {
 
-  protected final int batchSize;
+  protected final int batchSizeLimit;
+  protected int batchSizeInput;
 
   /**
    * Injection constructor
@@ -41,17 +44,17 @@ public class SchedulerTextBatches extends SchedulerRandom {
       @Constant(namespace = SchedulerRandom.class,
           value = "mappingsToPick") final int mappingsToPick,
       @Constant(namespace = SchedulerTextBatches.class,
-          value = "batchSize") final int sizeOfBatch,
+          value = "batchSizeLimit") final int sizeOfBatch,
       final CapacityCalculator capCalc, final VertxProvider vProv) {
     super(specProvider, random, mappingsToPick, capCalc, vProv);
-    this.batchSize = sizeOfBatch;
+    this.batchSizeLimit = sizeOfBatch;
   }
 
   @Override
   protected Set<Mapping<Task, Resource>> chooseMappingSubset(final Task task,
       final Set<Mapping<Task, Resource>> mappingOptions) {
     return super.chooseMappingSubset(task, mappingOptions.stream()
-        .filter(mapping -> !excludeMapping(mapping, task)).collect(Collectors.toSet()));
+        .filter(mapping -> excludeMapping(mapping, task)).collect(Collectors.toSet()));
   }
 
   /**
@@ -64,10 +67,13 @@ public class SchedulerTextBatches extends SchedulerRandom {
    */
   protected boolean excludeMapping(final Mapping<Task, Resource> mapping, final Task process) {
     final JsonObject input = PropertyServiceFunction.getInput(process);
-    final JsonElement batch = input.get("m");
-    final int m = input.getAsInt();
-    //final int byteSize = input.toString().getBytes().length;
-    final boolean overThreshold = m >= 10;
+    final UsageType usageT = PropertyServiceFunction.getUsageType(process);
+    
+    final JsonElement batch = input.get("batchSize");
+    if (batch != null) {
+        batchSizeInput = batch.getAsInt();
+    }
+    final boolean overThreshold = batchSizeInput >= batchSizeLimit;
     final boolean overAndServerless = overThreshold
         && PropertyServiceMapping.getEnactmentMode(mapping).equals(EnactmentMode.Serverless);
     final boolean underAndLocal = !overThreshold

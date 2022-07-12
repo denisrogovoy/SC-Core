@@ -16,6 +16,7 @@ import at.uibk.dps.sc.core.scheduler.SchedulerRandom;
 import at.uibk.dps.sc.core.scheduler.SchedulerSingleOption;
 import at.uibk.dps.sc.core.scheduler.SchedulerTextBatches;
 
+
 /**
  * The {@link SchedulerModule} configures the binding of the scheduling-related
  * interfaces.
@@ -48,7 +49,7 @@ public class SchedulerModule extends EeModule {
      */
     LocalResources,
 
-    BatchSize
+    BatchSizeLimit
   }
 
   /**
@@ -86,9 +87,9 @@ public class SchedulerModule extends EeModule {
 
   @Order(5)
   @Info("Batch size")
-  @Constant(namespace = SchedulerDataSize.class, value = "batchSize")
-  @Required(property = "schedulingMode", elements = "BatchSize")
-  public int batchSize = 10;
+  @Constant(namespace = SchedulerTextBatches.class, value = "batchSizeLimit")
+  @Required(property = "schedulingMode", elements = "BatchSizeLimit")
+  public int batchSizeLimit = 10;
 
   @Override
   protected void config() {
@@ -101,7 +102,7 @@ public class SchedulerModule extends EeModule {
       bind(Scheduler.class).to(SchedulerDataSize.class);
     } else if (schedulingMode.equals(SchedulingMode.LocalResources)) {
       bind(Scheduler.class).to(SchedulerLocalRes.class);
-    } else if (schedulingMode.equals(SchedulingMode.BatchSize)) {
+    } else if (schedulingMode.equals(SchedulingMode.BatchSizeLimit)) {
       bind(Scheduler.class).to(SchedulerTextBatches.class);
     }
     if (resourceArbitration.equals(ResourceArbitration.FCFS)) {
@@ -141,11 +142,11 @@ public class SchedulerModule extends EeModule {
     this.sizeThresholdKb = sizeThresholdKb;
   }
 
-  public int getbatchSize() {
-    return batchSize;
+  public int getbatchSizeLimit() {
+    return batchSizeLimit;
   }
 
-  public void setbatchSize(final int batchSize) {
-    this.batchSize = batchSize;
+  public void setbatchSizeLimit(final int batchSizeLimit) {
+    this.batchSizeLimit = batchSizeLimit;
   }
 }
