@@ -28,7 +28,7 @@ import net.sf.opendse.model.Task;
  */
 public class SchedulerTextBatches extends SchedulerRandom {
 
-  protected final int batchSizeLimit;
+  protected final int batchNumberLimit;
   protected int batchSizeInput;
 
   /**
@@ -44,10 +44,10 @@ public class SchedulerTextBatches extends SchedulerRandom {
       @Constant(namespace = SchedulerRandom.class,
           value = "mappingsToPick") final int mappingsToPick,
       @Constant(namespace = SchedulerTextBatches.class,
-          value = "batchSizeLimit") final int sizeOfBatch,
+          value = "batchNumberLimit") final int sizeOfBatch,
       final CapacityCalculator capCalc, final VertxProvider vProv) {
     super(specProvider, random, mappingsToPick, capCalc, vProv);
-    this.batchSizeLimit = sizeOfBatch;
+    this.batchNumberLimit = sizeOfBatch;
   }
 
   @Override
@@ -67,13 +67,15 @@ public class SchedulerTextBatches extends SchedulerRandom {
    */
   protected boolean excludeMapping(final Mapping<Task, Resource> mapping, final Task process) {
     final JsonObject input = PropertyServiceFunction.getInput(process);
-    final UsageType usageT = PropertyServiceFunction.getUsageType(process);
-    
-    final JsonElement batch = input.get("batchSize");
-    if (batch != null) {
-        batchSizeInput = batch.getAsInt();
+
+    final JsonElement numberOfWords = input.get("batchSize");
+    final JsonElement originalStr = input.get("originalStr");
+    if (numberOfWords != null && originalStr != null) {
+        final String text = originalStr.getAsString();
+        final String[] splited = text.split("\\s+");
+        batchSizeInput = splited.length / numberOfWords.getAsInt();
     }
-    final boolean overThreshold = batchSizeInput >= batchSizeLimit;
+    final boolean overThreshold = batchSizeInput >= batchNumberLimit;
     final boolean overAndServerless = overThreshold
         && PropertyServiceMapping.getEnactmentMode(mapping).equals(EnactmentMode.Serverless);
     final boolean underAndLocal = !overThreshold

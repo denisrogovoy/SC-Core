@@ -49,7 +49,7 @@ public class SchedulerModule extends EeModule {
      */
     LocalResources,
 
-    BatchSizeLimit
+    BatchNumberLimit
   }
 
   /**
@@ -87,9 +87,9 @@ public class SchedulerModule extends EeModule {
 
   @Order(5)
   @Info("Batch size")
-  @Constant(namespace = SchedulerTextBatches.class, value = "batchSizeLimit")
-  @Required(property = "schedulingMode", elements = "BatchSizeLimit")
-  public int batchSizeLimit = 10;
+  @Constant(namespace = SchedulerTextBatches.class, value = "batchNumberLimit")
+  @Required(property = "schedulingMode", elements = "BatchNumberLimit")
+  public int batchNumberLimit = 10;
 
   @Override
   protected void config() {
@@ -102,7 +102,7 @@ public class SchedulerModule extends EeModule {
       bind(Scheduler.class).to(SchedulerDataSize.class);
     } else if (schedulingMode.equals(SchedulingMode.LocalResources)) {
       bind(Scheduler.class).to(SchedulerLocalRes.class);
-    } else if (schedulingMode.equals(SchedulingMode.BatchSizeLimit)) {
+    } else if (schedulingMode.equals(SchedulingMode.BatchNumberLimit)) {
       bind(Scheduler.class).to(SchedulerTextBatches.class);
     }
     if (resourceArbitration.equals(ResourceArbitration.FCFS)) {
@@ -142,11 +142,11 @@ public class SchedulerModule extends EeModule {
     this.sizeThresholdKb = sizeThresholdKb;
   }
 
-  public int getbatchSizeLimit() {
-    return batchSizeLimit;
+  public int getbatchNumberLimit() {
+    return batchNumberLimit;
   }
 
-  public void setbatchSizeLimit(final int batchSizeLimit) {
-    this.batchSizeLimit = batchSizeLimit;
+  public void setbatchNumberLimit(final int batchNumberLimit) {
+    this.batchNumberLimit = batchNumberLimit;
   }
 }
